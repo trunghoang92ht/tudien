@@ -109,14 +109,15 @@ async function doSearch() {
   }
 }
 
-function speak(text) {
+// Hủy các yêu cầu đọc cũ để tránh bị kẹt
+  window.speechSynthesis.cancel();
+  
   const msg = new SpeechSynthesisUtterance(text);
   msg.lang = 'en-US';
+  msg.rate = 0.9; // Đọc chậm lại một chút để anh dễ nghe
+  
+  // Thêm dòng này để kích hoạt âm thanh trên di động
   window.speechSynthesis.speak(msg);
-}
-
-document.getElementById('searchInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') doSearch();
 });
 </script>
 </body>
