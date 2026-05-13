@@ -3,867 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>TừĐiển Pro – Đọc Như Người Việt</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #e63946;
-    --yellow: #ffd166;
-    --green: #06d6a0;
-    --blue: #118ab2;
-    --dark: #1a1a2e;
-    --card: #16213e;
-    --card2: #0f3460;
-    --text: #eaeaea;
-    --muted: #8899bb;
-    --accent: #ffd166;
+    --red: #e63946; --yellow: #ffd166; --green: #06d6a0; --blue: #118ab2;
+    --dark: #1a1a2e; --card: #16213e; --text: #eaeaea; --muted: #8899bb;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
   body {
     font-family: 'Nunito', sans-serif;
     background: var(--dark);
     color: var(--text);
     min-height: 100vh;
-    overflow-x: hidden;
   }
-
-  /* BG */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(17,138,178,0.18) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(230,57,70,0.12) 0%, transparent 70%),
-      var(--dark);
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 0 100px;
-    min-height: 100vh;
-  }
-
-  /* HEADER */
-  header {
-    padding: 24px 20px 16px;
-    text-align: center;
-  }
-  header .logo {
-    font-family: 'Baloo 2', cursive;
-    font-size: 26px;
-    font-weight: 800;
-    background: linear-gradient(90deg, #ffd166, #06d6a0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
-  }
-  header .tagline {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-    letter-spacing: 0.5px;
-  }
-
-  /* SEARCH */
-  .search-box {
-    margin: 12px 16px 0;
-    position: relative;
-  }
-  .search-box input {
-    width: 100%;
-    padding: 16px 56px 16px 20px;
-    background: var(--card);
-    border: 2px solid rgba(255,209,102,0.2);
-    border-radius: 18px;
-    color: var(--text);
-    font-family: 'Nunito', sans-serif;
-    font-size: 18px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .search-box input:focus {
-    border-color: var(--yellow);
-  }
-  .search-box input::placeholder { color: var(--muted); }
-  .search-btn {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: linear-gradient(135deg, #ffd166, #f4a261);
-    border: none;
-    border-radius: 12px;
-    width: 42px;
-    height: 42px;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.15s;
-  }
-  .search-btn:active { transform: translateY(-50%) scale(0.92); }
-
-  /* QUICK CHIPS */
-  .chips {
-    display: flex;
-    gap: 8px;
-    padding: 14px 16px 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .chips::-webkit-scrollbar { display: none; }
-  .chip {
-    white-space: nowrap;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .chip:hover, .chip.active {
-    background: rgba(255,209,102,0.15);
-    border-color: var(--yellow);
-    color: var(--yellow);
-  }
-
-  /* RESULT CARD */
-  .result {
-    margin: 16px;
-    background: var(--card);
-    border-radius: 24px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.07);
-    animation: slideUp 0.35s ease;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .result-top {
-    background: linear-gradient(135deg, #0f3460, #16213e);
-    padding: 22px 20px 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    position: relative;
-  }
-  .word-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .word-en {
-    font-family: 'Baloo 2', cursive;
-    font-size: 34px;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -1px;
-  }
-  .speak-btn {
-    background: linear-gradient(135deg, var(--blue), #06d6a0);
-    border: none;
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    font-size: 22px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 4px 15px rgba(6,214,160,0.3);
-    flex-shrink: 0;
-  }
-  .speak-btn:active { transform: scale(0.9); }
-  .speak-btn.speaking {
-    animation: pulse 0.8s infinite alternate;
-  }
-  @keyframes pulse {
-    from { box-shadow: 0 4px 15px rgba(6,214,160,0.3); }
-    to { box-shadow: 0 4px 25px rgba(6,214,160,0.7); }
-  }
-
-  .ipa {
-    font-size: 14px;
-    color: var(--muted);
-    margin-top: 4px;
-    font-style: italic;
-  }
-  .word-type-badge {
-    display: inline-block;
-    background: rgba(255,209,102,0.15);
-    color: var(--yellow);
-    border: 1px solid rgba(255,209,102,0.3);
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 10px;
-    margin-top: 8px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  /* VIET PHONETIC — HIGHLIGHT SECTION */
-  .viet-phon-section {
-    padding: 20px;
-    background: linear-gradient(135deg, rgba(230,57,70,0.08), rgba(255,209,102,0.05));
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .section-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-  .viet-phon-main {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .viet-text {
-    font-family: 'Baloo 2', cursive;
-    font-size: 30px;
-    font-weight: 800;
-    background: linear-gradient(90deg, #ffd166, #f4a261);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .arrow-icon { font-size: 20px; color: var(--muted); }
-  .viet-syllables {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-  .syllable-pill {
-    background: rgba(255,209,102,0.12);
-    border: 1px solid rgba(255,209,102,0.25);
-    border-radius: 10px;
-    padding: 5px 12px;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--yellow);
-  }
-  .viet-tip {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.5;
-    background: rgba(255,255,255,0.04);
-    border-radius: 10px;
-    padding: 10px 12px;
-  }
-  .viet-tip strong { color: var(--green); }
-
-  /* MEANING */
-  .meanings-section {
-    padding: 18px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .meaning-item {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: flex-start;
-  }
-  .meaning-num {
-    background: rgba(6,214,160,0.15);
-    color: var(--green);
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 2px 7px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .meaning-vi { font-size: 16px; font-weight: 700; color: #fff; }
-  .meaning-en-example {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 3px;
-    font-style: italic;
-  }
-  .meaning-en-example span { color: #aac4dd; }
-
-  /* PRONUNCIATION TIPS */
-  .tips-section {
-    padding: 16px 20px 20px;
-  }
-  .tip-card {
-    background: rgba(17,138,178,0.1);
-    border: 1px solid rgba(17,138,178,0.2);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-  }
-  .tip-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #06d6a0;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-  }
-  .tip-body { font-size: 14px; color: var(--muted); line-height: 1.6; }
-  .tip-body em { color: var(--yellow); font-style: normal; font-weight: 700; }
-
-  /* SPEED CONTROL */
-  .speed-row {
-    display: flex;
-    gap: 8px;
-    padding: 0 16px 4px;
-    align-items: center;
-  }
-  .speed-label { font-size: 12px; color: var(--muted); }
-  .speed-btn {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
-    color: var(--text);
-    padding: 5px 12px;
-    font-size: 12px;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .speed-btn.active {
-    background: rgba(6,214,160,0.2);
-    border-color: var(--green);
-    color: var(--green);
-  }
-
-  /* EMPTY / LOADING */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-  .empty-state .icon { font-size: 50px; margin-bottom: 16px; }
-  .empty-state h2 { font-family: 'Baloo 2', cursive; font-size: 22px; color: var(--text); margin-bottom: 8px; }
-  .empty-state p { font-size: 14px; line-height: 1.6; }
-
-  .loading {
-    text-align: center;
-    padding: 40px;
-    color: var(--muted);
-    font-size: 14px;
-  }
-  .spinner {
-    display: inline-block;
-    width: 28px; height: 28px;
-    border: 3px solid rgba(255,209,102,0.2);
-    border-top-color: var(--yellow);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: 12px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* HISTORY */
-  .history-section {
-    padding: 0 16px;
-    margin-top: 20px;
-  }
-  .history-title {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .history-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .history-item {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    padding: 6px 14px;
-    font-size: 14px;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .history-item:hover {
-    border-color: var(--yellow);
-    color: var(--yellow);
-  }
-
-  /* NAV */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: rgba(22,33,62,0.95);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255,255,255,0.07);
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0 16px;
-    z-index: 99;
-  }
-  .nav-btn {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 3px; font-size: 11px; color: var(--muted);
-    cursor: pointer; transition: color 0.15s;
-    background: none; border: none; font-family: 'Nunito', sans-serif;
-  }
-  .nav-btn .nav-icon { font-size: 22px; }
-  .nav-btn.active { color: var(--yellow); }
-
-  /* ERROR */
-  .error-msg {
-    margin: 16px;
-    background: rgba(230,57,70,0.1);
-    border: 1px solid rgba(230,57,70,0.3);
-    border-radius: 14px;
-    padding: 16px;
-    color: #ff8fa3;
-    font-size: 14px;
-    text-align: center;
-  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 100px; }
+  header { text-align: center; margin-bottom: 20px; }
+  .logo { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 800; color: var(--yellow); }
+  .search-box { position: relative; margin-bottom: 20px; }
+  input { width: 100%; padding: 15px 20px; background: var(--card); border: 2px solid rgba(255,209,102,0.2); border-radius: 15px; color: #fff; font-size: 16px; outline: none; }
+  .search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--yellow); border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+  .result-card { background: var(--card); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
+  .word-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+  .word-en { font-size: 32px; font-weight: 800; color: #fff; }
+  .ipa { color: var(--muted); font-style: italic; }
+  .viet-phonetic { font-size: 24px; color: var(--green); font-weight: 700; margin: 10px 0; background: rgba(6,214,160,0.1); padding: 10px; border-radius: 10px; text-align: center; }
+  .meaning { margin-top: 15px; line-height: 1.6; }
+  .btn-speak { background: var(--blue); border: none; color: #fff; padding: 10px 15px; border-radius: 50%; cursor: pointer; font-size: 20px; }
+  .loading { text-align: center; padding: 20px; color: var(--muted); }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #16213e; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #ffffff1a; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo">🇻🇳 TừĐiển Pro</div>
-    <div class="tagline">Học phát âm theo phong cách Việt hóa • Nghe & Đọc</div>
+    <p style="font-size: 12px; color: var(--muted)">Phát âm tiếng Anh theo kiểu Việt</p>
   </header>
 
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh (ví dụ: hello)...">
     <button class="search-btn" onclick="doSearch()">🔍</button>
   </div>
 
-  <div class="chips" id="chips">
-    <div class="chip" onclick="quickSearch('sport')">sport</div>
-    <div class="chip" onclick="quickSearch('beautiful')">beautiful</div>
-    <div class="chip" onclick="quickSearch('computer')">computer</div>
-    <div class="chip" onclick="quickSearch('coffee')">coffee</div>
-    <div class="chip" onclick="quickSearch('music')">music</div>
-    <div class="chip" onclick="quickSearch('happy')">happy</div>
-    <div class="chip" onclick="quickSearch('school')">school</div>
-    <div class="chip" onclick="quickSearch('phone')">phone</div>
-  </div>
-
   <div id="mainContent">
-    <div class="empty-state">
-      <div class="icon">📖</div>
-      <h2>Tra từ để bắt đầu!</h2>
-      <p>Nhập từ tiếng Anh vào ô tìm kiếm.<br>
-      Em sẽ hiện cách đọc theo âm Việt, giống người Nhật dùng Katakana vậy! 🎌</p>
+    <div style="text-align: center; padding: 40px; color: var(--muted)">
+      <p>Nhập từ để bắt đầu tra cứu!</p>
     </div>
-  </div>
-
-  <div class="history-section" id="historySection" style="display:none">
-    <div class="history-title">⏱ Vừa tra</div>
-    <div class="history-list" id="historyList"></div>
   </div>
 </div>
 
 <div class="bottom-nav">
-  <button class="nav-btn active" onclick="switchTab('search')">
-    <span class="nav-icon">🔍</span>Tra từ
-  </button>
-  <button class="nav-btn" onclick="switchTab('tips')">
-    <span class="nav-icon">🗣️</span>Mẹo đọc
-  </button>
-  <button class="nav-btn" onclick="switchTab('history')">
-    <span class="nav-icon">⭐</span>Đã lưu
-  </button>
+  <span>🔍 Tra từ</span>
+  <span>⭐ Đã lưu</span>
 </div>
 
 <script>
-let currentSpeed = 1.0;
-let history = JSON.parse(localStorage.getItem('dict_history') || '[]');
-let saved = JSON.parse(localStorage.getItem('dict_saved') || '[]');
-let currentWord = '';
-
-// --- Vietnamese Phonetic Engine ---
-// Maps English sounds to Vietnamese reading style
-const vietPhonMap = [
-  // Clusters
-  [/str/gi, 'x-tr'], [/spr/gi, 'x-pr'], [/scr/gi, 'x-cr'], [/spl/gi, 'x-pl'],
-  [/thr/gi, 'dơ'], [/sch/gi, 'xk'],
-  // Digraphs
-  [/ch/gi, 'ch'], [/sh/gi, 'sh'], [/th/gi, 'đ'], [/ph/gi, 'f'],
-  [/wh/gi, 'w'], [/ck/gi, 'k'], [/qu/gi, 'kw'], [/gh/gi, 'g'],
-  [/ng/gi, 'ng'], [/kn/gi, 'n'], [/wr/gi, 'r'],
-  // Vowel combos
-  [/igh/gi, 'ai'], [/ough/gi, 'ô'], [/augh/gi, 'ô'],
-  [/tion/gi, '-sần'], [/sion/gi, '-zhần'], [/ious/gi, '-i-ớt'],
-  [/ious/gi, '-i-ớt'], [/ture/gi, '-chờ'], [/ment/gi, '-mần-t'],
-  [/ness/gi, '-nớt'], [/less/gi, '-lớt'], [/ful/gi, '-fồl'],
-  [/able/gi, '-ây-bồl'], [/ible/gi, '-i-bồl'],
-  [/tion/gi, '-sần'], [/ly/gi, '-li'],
-  [/oo/gi, 'u'], [/ee/gi, 'i'], [/ea/gi, 'i'], [/ai/gi, 'ây'],
-  [/ay/gi, 'ây'], [/oa/gi, 'ô'], [/oe/gi, 'ô'], [/ow/gi, 'âu'],
-  [/ou/gi, 'âu'], [/oi/gi, 'oi'], [/oy/gi, 'oi'],
-  [/au/gi, 'ô'], [/aw/gi, 'ô'], [/ew/gi, 'iu'], [/ue/gi, 'u'],
-  [/ui/gi, 'ui'], [/ie/gi, 'i'],
-  // Single vowels (end position)
-  [/a([^aeiou]?)$/gi, 'ơ'], [/e([^aeiou]?)$/gi, 'ơ'],
-  // Consonants
-  [/c(?=[ei])/gi, 's'], [/c/gi, 'k'],
-  [/g(?=[ei])/gi, 'dj'], [/j/gi, 'dj'],
-  [/x/gi, 'gz'], [/z/gi, 'z'],
-  [/v/gi, 'v'], [/w/gi, 'w'],
-  // Final consonants
-  [/t$/gi, 't'], [/d$/gi, 'đ'], [/k$/gi, 'k'],
-  [/p$/gi, 'p'], [/b$/gi, 'b'], [/g$/gi, 'g'],
-  [/m$/gi, 'm'], [/n$/gi, 'n'], [/l$/gi, 'l'], [/r$/gi, 'r'],
-  [/s$/gi, 'x'],
-  // Remaining vowels
-  [/a/gi, 'a'], [/e/gi, 'e'], [/i/gi, 'i'], [/o/gi, 'ô'],
-  [/u/gi, 'ă'], [/y/gi, 'i'],
-];
-
-function toVietPhonetic(word) {
-  word = word.toLowerCase().trim();
-  // Split by syllable (simple heuristic)
-  const syllables = splitSyllables(word);
-  return syllables.map(syl => convertSyllable(syl)).join(' - ');
+// Hàm mô phỏng cách đọc Việt hóa (Vietnamese Phonetic)
+function getVietPhonetic(word) {
+  const map = {
+    'hello': 'He-lô',
+    'computer': 'Kôm-piu-tờ',
+    'beautiful': 'Biu-ti-fồl',
+    'sport': 'Xpót',
+    'music': 'Miu-dịch'
+  };
+  return map[word.toLowerCase()] || 'Đang cập nhật âm...';
 }
 
-function splitSyllables(word) {
-  // Simple syllable split for English
-  const vowels = 'aeiouy';
-  let syllables = [];
-  let current = '';
-  let vowelCount = 0;
-
-  for (let i = 0; i < word.length; i++) {
-    current += word[i];
-    if (vowels.includes(word[i])) {
-      vowelCount++;
-      if (vowelCount >= 1 && i < word.length - 2 && !vowels.includes(word[i+1])) {
-        // Check for consonant cluster
-        if (i + 2 < word.length && !vowels.includes(word[i+2])) {
-          current += word[i+1];
-          i++;
-        }
-        syllables.push(current);
-        current = '';
-        vowelCount = 0;
-      }
-    }
-  }
-  if (current) syllables.push(current);
-  return syllables.filter(s => s.length > 0);
-}
-
-function convertSyllable(syl) {
-  let result = syl;
-  for (const [pattern, replacement] of vietPhonMap) {
-    result = result.replace(pattern, replacement);
-  }
-  return result.charAt(0).toUpperCase() + result.slice(1);
-}
-
-// --- API Call to Claude for dictionary data ---
-async function lookupWord(word) {
-  const prompt = `Bạn là từ điển Anh-Việt chuyên nghiệp. Hãy cung cấp thông tin cho từ tiếng Anh: "${word}"
-
-Trả lời CHỈ bằng JSON, không có markdown, không có backtick, theo cấu trúc sau:
-{
-  "word": "từ tiếng Anh",
-  "ipa": "/phiên âm IPA/",
-  "type": "loại từ (noun/verb/adj/adv/phrase...)",
-  "viet_phonetic": "phiên âm theo kiểu Việt hóa giống như người Nhật dùng katakana - đọc sao cho người Việt đọc vào là ra tiếng Anh. VD: sport = xpo-t, computer = kôm-piu-tờ, beautiful = biu-ti-fồl",
-  "syllables": ["âm tiết 1", "âm tiết 2"],
-  "tip_vowels": "mẹo đọc nguyên âm đặc biệt trong từ này",
-  "tip_consonants": "mẹo đọc phụ âm khó trong từ này (nếu có)",
-  "meanings": [
-    {"vi": "nghĩa tiếng Việt", "example_en": "câu ví dụ tiếng Anh", "example_vi": "dịch nghĩa câu ví dụ"}
-  ],
-  "common_mistake": "lỗi phát âm người Việt hay mắc phải"
-}
-
-Chỉ trả JSON thuần, không thêm gì khác.`;
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }]
-    })
-  });
-
-  const data = await response.json();
-  const text = data.content.map(i => i.text || '').join('');
-  const clean = text.replace(/```json|```/g, '').trim();
-  return JSON.parse(clean);
-}
-
-// --- Render Result ---
-function renderResult(d) {
-  const container = document.getElementById('mainContent');
-  const viet = d.viet_phonetic || toVietPhonetic(d.word);
-  const syllables = d.syllables || [viet];
-
-  const meaningsHTML = (d.meanings || []).slice(0, 3).map((m, i) => `
-    <div class="meaning-item">
-      <span class="meaning-num">${i+1}</span>
-      <div>
-        <div class="meaning-vi">${m.vi}</div>
-        <div class="meaning-en-example">
-          <span>${m.example_en || ''}</span>
-          ${m.example_vi ? `<br><span style="color:var(--green)">${m.example_vi}</span>` : ''}
-        </div>
-      </div>
-    </div>
-  `).join('');
-
-  const syllablesHTML = syllables.map(s =>
-    `<span class="syllable-pill">${s}</span>`
-  ).join('');
-
-  container.innerHTML = `
-    <div class="result">
-      <div class="result-top">
-        <div class="word-row">
-          <div>
-            <div class="word-en">${d.word}</div>
-            <div class="ipa">${d.ipa || ''}</div>
-          </div>
-          <button class="speak-btn" onclick="speak('${d.word}')" id="speakBtn">🔊</button>
-        </div>
-        <div class="word-type-badge">${d.type || 'word'}</div>
-      </div>
-
-      <div class="viet-phon-section">
-        <div class="section-label">🇻🇳 Đọc theo kiểu Việt hóa</div>
-        <div class="viet-phon-main">
-          <div class="viet-text">${viet}</div>
-        </div>
-        <div class="viet-syllables" style="margin-top:12px">
-          ${syllablesHTML}
-        </div>
-        <div class="viet-tip">
-          💡 <strong>Cách đọc:</strong> Đọc từng âm tiết trên, ghép lại = ra tiếng Anh!
-          ${d.tip_vowels ? `<br>🔤 Nguyên âm: ${d.tip_vowels}` : ''}
-        </div>
-      </div>
-
-      <div style="padding:12px 16px 8px">
-        <div class="speed-row">
-          <span class="speed-label">⚡ Tốc độ đọc:</span>
-          <button class="speed-btn ${currentSpeed===0.6?'active':''}" onclick="setSpeed(0.6)">🐢 Chậm</button>
-          <button class="speed-btn ${currentSpeed===1.0?'active':''}" onclick="setSpeed(1.0)">🚶 Bình thường</button>
-          <button class="speed-btn ${currentSpeed===1.3?'active':''}" onclick="setSpeed(1.3)">🏃 Nhanh</button>
-        </div>
-      </div>
-
-      <div class="meanings-section">
-        <div class="section-label">📘 Nghĩa & Ví dụ</div>
-        ${meaningsHTML}
-      </div>
-
-      <div class="tips-section">
-        <div class="section-label">🎯 Mẹo phát âm</div>
-        ${d.tip_consonants ? `
-        <div class="tip-card">
-          <div class="tip-title">🔤 Phụ âm</div>
-          <div class="tip-body">${d.tip_consonants}</div>
-        </div>` : ''}
-        ${d.common_mistake ? `
-        <div class="tip-card">
-          <div class="tip-title">⚠️ Lỗi hay gặp</div>
-          <div class="tip-body">${d.common_mistake}</div>
-        </div>` : ''}
-        <div class="tip-card" style="background:rgba(6,214,160,0.08);border-color:rgba(6,214,160,0.2)">
-          <div class="tip-title" style="color:var(--yellow)">🔊 Luyện tập</div>
-          <div class="tip-body">Nhấn nút 🔊 để nghe, rồi đọc lại theo. Thử đổi tốc độ <em>chậm</em> để nghe rõ từng âm!</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// --- Speech ---
-function speak(word) {
-  if (!word) word = currentWord;
-  if (!word) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(word);
-  utter.lang = 'en-US';
-  utter.rate = currentSpeed;
-
-  const btn = document.getElementById('speakBtn');
-  if (btn) {
-    btn.classList.add('speaking');
-    utter.onend = () => btn.classList.remove('speaking');
-    utter.onerror = () => btn.classList.remove('speaking');
-  }
-  window.speechSynthesis.speak(utter);
-}
-
-function setSpeed(s) {
-  currentSpeed = s;
-  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-}
-
-// --- Search ---
 async function doSearch() {
-  const input = document.getElementById('searchInput');
-  const word = input.value.trim();
+  const word = document.getElementById('searchInput').value.trim();
   if (!word) return;
-  await searchWord(word);
-}
 
-async function searchWord(word) {
-  currentWord = word;
-  document.getElementById('searchInput').value = word;
-
-  // Show loading
-  document.getElementById('mainContent').innerHTML = `
-    <div class="loading">
-      <div class="spinner"></div>
-      <div>Đang tra từ <strong>${word}</strong>...</div>
-    </div>`;
-
-  // Add to history
-  history = [word, ...history.filter(h => h !== word)].slice(0, 10);
-  localStorage.setItem('dict_history', JSON.stringify(history));
-  renderHistory();
+  const content = document.getElementById('mainContent');
+  content.innerHTML = '<div class="loading">Đang tra từ...</div>';
 
   try {
-    const data = await lookupWord(word);
-    renderResult(data);
-    // Auto speak
-    setTimeout(() => speak(word), 600);
-  } catch(e) {
-    document.getElementById('mainContent').innerHTML = `
-      <div class="error-msg">
-        ❌ Không tra được từ này. Kiểm tra lại kết nối và thử lại nhé anh!<br>
-        <small style="opacity:0.6;margin-top:6px;display:block">${e.message}</small>
-      </div>`;
+    // Sử dụng API từ điển miễn phí (không cần Key bảo mật)
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    if (!res.ok) throw new Error("Không tìm thấy từ");
+    const data = await res.json();
+    const entry = data[0];
+
+    content.innerHTML = `
+      <div class="result-card">
+        <div class="word-head">
+          <div>
+            <div class="word-en">${entry.word}</div>
+            <div class="ipa">${entry.phonetic || ''}</div>
+          </div>
+          <button class="btn-speak" onclick="speak('${entry.word}')">🔊</button>
+        </div>
+        
+        <div style="font-size: 12px; color: var(--muted); text-transform: uppercase;">Cách đọc Việt hóa:</div>
+        <div class="viet-phonetic">${getVietPhonetic(entry.word)}</div>
+
+        <div class="meaning">
+          <strong>Nghĩa:</strong> ${entry.meanings[0].definitions[0].definition}
+        </div>
+      </div>
+    `;
+    speak(entry.word);
+  } catch (err) {
+    content.innerHTML = `<div style="color:var(--red); text-align:center; padding:20px;">${err.message}</div>`;
   }
 }
 
-function quickSearch(word) {
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  event.target.classList.add('active');
-  searchWord(word);
+function speak(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = 'en-US';
+  window.speechSynthesis.speak(msg);
 }
 
-// --- History ---
-function renderHistory() {
-  if (history.length === 0) {
-    document.getElementById('historySection').style.display = 'none';
-    return;
-  }
-  document.getElementById('historySection').style.display = 'block';
-  document.getElementById('historyList').innerHTML = history.map(w =>
-    `<div class="history-item" onclick="searchWord('${w}')">${w}</div>`
-  ).join('');
-}
-
-// --- Tabs ---
-function switchTab(tab) {
-  document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-
-  if (tab === 'tips') {
-    document.getElementById('mainContent').innerHTML = `
-      <div style="padding:16px">
-        <div style="font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;margin-bottom:16px">🗣️ Mẹo phát âm tiếng Anh</div>
-
-        <div class="tip-card" style="margin-bottom:10px">
-          <div class="tip-title">🔤 Nguyên âm dài & ngắn</div>
-          <div class="tip-body">
-            Tiếng Anh phân biệt nguyên âm dài/ngắn rõ ràng.<br>
-            <em>ship</em> (i ngắn) ≠ <em>sheep</em> (i dài)<br>
-            <em>bit</em> ≠ <em>beat</em> | <em>pot</em> ≠ <em>port</em>
-          </div>
-        </div>
-
-        <div class="tip-card" style="margin-bottom:10px">
-          <div class="tip-title">💨 Phụ âm bật hơi</div>
-          <div class="tip-body">
-            <em>p, t, k</em> ở đầu từ phải bật hơi mạnh.<br>
-            Thử để tờ giấy trước miệng — phải rung!<br>
-            <em>pen, ten, key</em>
-          </div>
-        </div>
-
-        <div class="tip-card" style="margin-bottom:10px">
-          <div class="tip-title">🔚 Phụ âm cuối</div>
-          <div class="tip-body">
-            Người Việt hay bỏ mất phụ âm cuối.<br>
-            Phải đọc rõ: <em>cat, dog, book, milk</em><br>
-            Đặc biệt: <em>-ed</em> đọc là /t/, /d/, hoặc /ɪd/
-          </div>
-        </div>
-
-        <div class="tip-card" style="margin-bottom:10px">
-          <div class="tip-title">🎵 Trọng âm</div>
-          <div class="tip-body">
-            Âm tiết có trọng âm phải đọc to, dài hơn.<br>
-            <em>PHOto</em> (trọng âm âm 1) | <em>phoTOgraph</em> (âm 2)<br>
-            Sai trọng âm = người bản ngữ không hiểu!
-          </div>
-        </div>
-
-        <div class="tip-card">
-          <div class="tip-title">🇻🇳 Phiên âm Việt hóa là gì?</div>
-          <div class="tip-body">
-            Giống người Nhật dùng Katakana để "Nhật hóa" tiếng Anh,<br>
-            app này dùng âm Việt để bạn đọc đúng hơn.<br>
-            <em>sport → xpo-t</em><br>
-            <em>coffee → cô-fi</em><br>
-            <em>computer → kôm-piu-tờ</em><br>
-            Đây là bước đệm — hãy luyện để đọc như người bản ngữ!
-          </div>
-        </div>
-      </div>`;
-  } else if (tab === 'history') {
-    document.getElementById('mainContent').innerHTML = `
-      <div style="padding:16px">
-        <div style="font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;margin-bottom:16px">⭐ Từ đã lưu & tra</div>
-        ${saved.length === 0 && history.length === 0 ?
-          '<div style="color:var(--muted);text-align:center;padding:40px">Chưa có từ nào</div>'
-          : ''}
-        ${history.length > 0 ? `
-          <div class="history-title">⏱ Lịch sử tra từ</div>
-          <div class="history-list" style="margin-bottom:20px">
-            ${history.map(w => `<div class="history-item" onclick="switchTabSearch('${w}')">${w}</div>`).join('')}
-          </div>` : ''}
-      </div>`;
-  }
-}
-
-function switchTabSearch(word) {
-  document.querySelectorAll('.nav-btn').forEach((b,i) => {
-    b.classList.toggle('active', i===0);
-  });
-  searchWord(word);
-}
-
-// --- Input Enter ---
-document.getElementById('searchInput').addEventListener('keydown', e => {
+document.getElementById('searchInput').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') doSearch();
 });
-
-// Init
-renderHistory();
 </script>
 </body>
 </html>
