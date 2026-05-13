@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>TừĐiển Pro - Auto Update</title>
+    <title>TừĐiển Pro – Phiên Âm Tự Động 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --dark: #1a1a2e; --card: #16213e; --yellow: #ffd166; --green: #06d6a0; --text: #eaeaea; }
@@ -15,65 +15,107 @@
         input { flex: 1; padding: 15px; background: var(--card); border: 2px solid rgba(255,209,102,0.3); border-radius: 15px; color: #fff; font-size: 16px; outline: none; }
         .search-btn { background: var(--yellow); border: none; padding: 0 20px; border-radius: 15px; font-size: 20px; cursor: pointer; }
         .result-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); position: relative; }
-        .word-en { font-size: 32px; font-weight: 800; color: #fff; }
+        .word-en { font-size: 32px; font-weight: 800; color: #fff; text-transform: lowercase; }
         .ipa { color: #8899bb; font-style: italic; margin-bottom: 10px; font-size: 14px; }
-        .viet-phonetic { font-size: 26px; color: var(--green); background: rgba(6,214,160,0.1); padding: 18px; border-radius: 12px; text-align: center; margin: 15px 0; border-left: 5px solid var(--green); font-weight: 800; text-transform: uppercase; }
-        .btn-speak { background: #118ab2; border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; position: absolute; right: 20px; top: 20px; }
+        .viet-phonetic { font-size: 24px; color: var(--green); background: rgba(6,214,160,0.15); padding: 20px; border-radius: 12px; text-align: center; margin: 15px 0; border-left: 5px solid var(--green); line-height: 1.5; font-weight: 800; }
+        .stress { color: #fff; text-decoration: underline; font-size: 28px; }
+        .btn-speak { background: #118ab2; border: none; color: #fff; width: 55px; height: 55px; border-radius: 50%; font-size: 28px; position: absolute; right: 20px; top: 20px; }
         .meaning-text { font-size: 20px; font-weight: 700; color: #fff; margin-top: 15px; border-top: 1px solid #ffffff1a; padding-top: 10px; }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">TừĐiển Pro</div>
-        <p style="font-size: 12px; color: #8899bb">Hệ thống phiên âm Google tự động</p>
+        <p style="font-size: 12px; color: #8899bb">Hệ thống xử lý âm bồi tự động 100%</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Nhập từ bất kỳ...">
+        <input type="text" id="searchInput" placeholder="Tra từ bất kỳ (Vd: different)..." autocomplete="off">
         <button class="search-btn" onclick="doSearch()">🔍</button>
     </div>
 
     <div id="mainContent"></div>
 
 <script>
+function convertToVietPhonetic(ipa) {
+    if (!ipa) return "";
+
+    // 1. Chuẩn hóa và xử lý trọng âm
+    let text = ipa.toLowerCase()
+        .replace(/\//g, '')
+        .replace(/ˈ/g, ' STRESS ') 
+        .replace(/ˌ/g, ' ');
+
+    // 2. Thay thế âm phức tạp bằng âm tiếng Việt tương đương
+    const map = [
+        { r: /tʃ/g, v: 'ch' }, { r: /dʒ/g, v: 'giờ' }, { r: /ʃ/g, v: 'sh' },
+        { r: /θ/g, v: 'th' }, { r: /ð/g, v: 'đ' }, { r: /ɹ|r/g, v: 'r' },
+        { r: /ɔː|ɒ|ɔ/g, v: 'o' }, { r: /ʊ|uː/g, v: 'u' }, { r: /ʌ/g, v: 'ă' },
+        { r: /æ|e/g, v: 'e' }, { r: /ə/g, v: 'ơ' }, { r: /ɪ|iː/g, v: 'i' },
+        { r: /aɪ/g, v: 'ai' }, { r: /aʊ/g, v: 'ao' }, { r: /eɪ/g, v: 'ei' },
+        { r: /f/g, v: 'ph' }, { r: /s/g, v: 'x' }, { r: /z/g, v: 'z' }
+    ];
+
+    map.forEach(item => { text = text.replace(item.r, item.v); });
+
+    // 3. Xử lý vần đặc biệt (giống tiếng Việt)
+    text = text.replace(/ph ơ n/g, 'phần').replace(/r ơ n/g, 'rần').replace(/t ơ n/g, 'tần');
+    text = text.replace(/st/g, 'x tờ').replace(/sp/g, 'x pờ');
+
+    // 4. Xử lý phụ âm cuối (thêm dấu cách để dễ đọc)
+    text = text.replace(/t\b|t(?=\s)/g, ' tờ').replace(/k\b|k(?=\s)/g, ' cờ').replace(/p\b|p(?=\s)/g, ' pờ');
+
+    let words = text.split(/\s+/).filter(w => w !== "");
+    let finalResult = [];
+    let isStressed = false;
+
+    words.forEach(w => {
+        if (w === "stress") {
+            isStressed = true;
+        } else {
+            let val = w;
+            if (isStressed) {
+                // Thêm dấu sắc vào trọng âm
+                val = val.replace(/([aeiouăơêôiy])/, '$1́');
+                finalResult.push(`<span class="stress">${val.toUpperCase()}</span>`);
+                isStressed = false;
+            } else {
+                finalResult.push(val.toLowerCase());
+            }
+        }
+    });
+
+    return finalResult.join(' ').toUpperCase().replace(/\s+/g, ' ').trim();
+}
+
 async function doSearch() {
     const word = document.getElementById('searchInput').value.trim();
     if (!word) return;
     const content = document.getElementById('mainContent');
-    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang đồng bộ dữ liệu...</div>';
+    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang phân tích âm...</div>';
 
     try {
-        // Lấy nghĩa và phiên âm từ Google Translate
-        const transUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&dt=rm&q=${encodeURI(word)}`;
-        const transRes = await fetch(transUrl);
-        const transData = await transRes.json();
-
-        // Lấy IPA từ Dictionary API (nếu có)
         const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const dictData = await dictRes.json();
-        
+        const transRes = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(word)}`);
+        const transData = await transRes.json();
+
         let ipa = "";
         if(dictData[0]) {
             ipa = dictData[0].phonetic || (dictData[0].phonetics.find(p => p.text) || {}).text || "";
         }
-
-        // Google Translate trả về phiên âm ở [1][0][0] hoặc [1][0][1]
-        let vietPhonetic = transData[1] ? (transData[1][0][1] || transData[1][0][0]) : word;
-        
-        // Làm sạch phiên âm để dễ đọc kiểu Việt Nam
-        vietPhonetic = vietPhonetic.replace(/[\/\(\)]/g, '').replace(/-/g, ' ');
 
         content.innerHTML = `
             <div class="result-card">
                 <button class="btn-speak" onclick="speak('${word}')">🔊</button>
                 <div class="word-en">${word}</div>
                 <div class="ipa">${ipa}</div>
-                <div class="viet-phonetic">${vietPhonetic}</div>
+                <div class="viet-phonetic">${convertToVietPhonetic(ipa)}</div>
                 <div class="meaning-text">${transData[0][0][0]}</div>
             </div>`;
         speak(word);
     } catch (err) {
-        content.innerHTML = `<div style="padding:20px;text-align:center;">Lỗi kết nối server!</div>`;
+        content.innerHTML = `<div style="padding:20px;text-align:center;">Lỗi kết nối dữ liệu!</div>`;
     }
 }
 
