@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>TừĐiển Pro – Phiên Âm Chuẩn Việt</title>
+    <title>TừĐiển Pro – Phiên Âm Tiếng Việt</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --dark: #1a1a2e; --card: #16213e; --yellow: #ffd166; --green: #06d6a0; --text: #eaeaea; }
@@ -17,7 +17,7 @@
         .result-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); position: relative; }
         .word-en { font-size: 32px; font-weight: 800; color: #fff; text-transform: lowercase; }
         .ipa { color: #8899bb; font-style: italic; margin-bottom: 10px; font-size: 16px; }
-        .viet-phonetic { font-size: 26px; color: var(--green); font-weight: 800; background: rgba(6,214,160,0.15); padding: 18px; border-radius: 12px; text-align: center; margin: 15px 0; border-left: 5px solid var(--green); text-transform: uppercase; }
+        .viet-phonetic { font-size: 24px; color: var(--green); font-weight: 800; background: rgba(6,214,160,0.15); padding: 18px; border-radius: 12px; text-align: center; margin: 15px 0; border-left: 5px solid var(--green); text-transform: uppercase; letter-spacing: 0.5px; }
         .btn-speak { background: #118ab2; border: none; color: #fff; width: 55px; height: 55px; border-radius: 50%; font-size: 28px; cursor: pointer; position: absolute; right: 20px; top: 20px; }
         .meaning-box { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .meaning-text { font-size: 20px; font-weight: 700; color: #fff; }
@@ -26,25 +26,25 @@
 <body>
     <header>
         <div class="logo">🇻🇳 TừĐiển Pro</div>
-        <p style="font-size: 13px; color: #8899bb">Hệ thống phiên âm tiếng Việt thông minh</p>
+        <p style="font-size: 13px; color: #8899bb">Phiên âm tiếng Việt dễ đọc (Dùng dấu cách)</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Ví dụ: sport, different..." autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Nhập từ cần tra..." autocomplete="off">
         <button class="search-btn" onclick="doSearch()">🔍</button>
     </div>
 
     <div id="mainContent"></div>
 
 <script>
-// Bộ lọc âm bồi chuẩn xác theo âm thanh
+// Bộ lọc âm bồi chuẩn dùng dấu cách thay cho gạch ngang
 function smartVietPhonetic(ipa, word) {
     let raw = (ipa || word).toLowerCase().replace(/[\/ˈˌː]/g, '');
 
-    // 1. Xử lý các tổ hợp phụ âm khó (giống Katakana)
+    // Quy tắc chuyển đổi âm tiết (Dùng dấu cách)
     const rules = [
-        { eng: 'sp', vi: 'x-pơ' }, { eng: 'st', vi: 'x-tơ' }, { eng: 'sk', vi: 'x-cơ' },
-        { eng: 'ts', vi: 't-xờ' }, { eng: 'tr', vi: 't-rờ' }, { eng: 'dr', vi: 'đ-rờ' },
+        { eng: 'sp', vi: 'x pơ ' }, { eng: 'st', vi: 'x tờ ' }, { eng: 'sk', vi: 'x cơ ' },
+        { eng: 'ts', vi: 't xờ ' }, { eng: 'tr', vi: 't rờ ' }, { eng: 'dr', vi: 'đ rờ ' },
         { eng: 'ɔ', vi: 'o' }, { eng: 'æ', vi: 'e' }, { eng: 'ə', vi: 'ơ' },
         { eng: 'θ', vi: 'th' }, { eng: 'ð', vi: 'đ' }, { eng: 'ʃ', vi: 'sh' },
         { eng: 'tʃ', vi: 'ch' }, { eng: 'dʒ', vi: 'giờ' },
@@ -54,22 +54,25 @@ function smartVietPhonetic(ipa, word) {
     let result = raw;
     rules.forEach(r => { result = result.split(r.eng).join(r.vi); });
 
-    // 2. Thêm đuôi "-tờ", "-cờ"... cho các phụ âm kết thúc từ
-    if (result.endsWith('t')) result = result.slice(0, -1) + '-tờ';
-    if (result.endsWith('k')) result = result.slice(0, -1) + '-cờ';
-    if (result.endsWith('s')) result = result.slice(0, -1) + '-xờ';
-    if (result.endsWith('d')) result = result.slice(0, -1) + '-dờ';
-    if (result.endsWith('p')) result = result.slice(0, -1) + '-pờ';
+    // Xử lý phụ âm cuối từ (Thêm dấu cách trước đuôi)
+    if (result.endsWith('t')) result = result.slice(0, -1) + ' tờ';
+    if (result.endsWith('k')) result = result.slice(0, -1) + ' cờ';
+    if (result.endsWith('s')) result = result.slice(0, -1) + ' xờ';
+    if (result.endsWith('d')) result = result.slice(0, -1) + ' dờ';
+    if (result.endsWith('p')) result = result.slice(0, -1) + ' pờ';
 
-    // 3. Xử lý riêng các từ anh hay tra
+    // Danh sách các từ anh hay dùng nhất để đảm bảo 100% chuẩn
     const fixed = {
-        'sport': 'X-PÓ-TỜ',
-        'different': 'ĐI-PHƠ-RƠN-TỜ',
-        'homework': 'HÔM-UỐC-CỜ',
-        'elephant': 'E-LÊ-PHẦN-TỜ'
+        'sport': 'X PÓ TỜ',
+        'different': 'ĐI PHƠ RƠN TỜ',
+        'homework': 'HÔM UỐC CỜ',
+        'elephant': 'E LÊ PHẦN TỜ'
     };
     
-    return fixed[word.toLowerCase()] || result.toUpperCase();
+    let finalResult = fixed[word.toLowerCase()] || result.toUpperCase();
+    
+    // Làm sạch các dấu cách thừa
+    return finalResult.replace(/\s+/g, ' ').trim();
 }
 
 async function doSearch() {
@@ -101,7 +104,7 @@ async function doSearch() {
             </div>`;
         speak(word);
     } catch (err) {
-        content.innerHTML = `<div style="padding:20px;text-align:center;">Lỗi mạng hoặc không tìm thấy từ!</div>`;
+        content.innerHTML = `<div style="padding:20px;text-align:center;">Không tìm thấy từ này ạ!</div>`;
     }
 }
 
