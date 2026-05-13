@@ -14,74 +14,81 @@
         .search-box { position: relative; display: flex; gap: 8px; }
         input { flex: 1; padding: 15px; background: var(--card); border: 2px solid rgba(255,209,102,0.2); border-radius: 15px; color: #fff; font-size: 16px; outline: none; }
         .search-btn { background: var(--yellow); border: none; padding: 0 20px; border-radius: 15px; font-size: 20px; cursor: pointer; }
-        .result-card { background: var(--card); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); animation: slide 0.3s ease; }
-        @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .result-card { background: var(--card); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
         .word-en { font-size: 32px; font-weight: 800; color: #fff; }
         .ipa { color: #8899bb; font-style: italic; margin-bottom: 10px; }
-        .viet-label { font-size: 12px; color: #8899bb; text-transform: uppercase; margin-top: 15px; }
-        .viet-phonetic { font-size: 26px; color: var(--green); font-weight: 700; background: rgba(6,214,160,0.1); padding: 12px; border-radius: 12px; text-align: center; margin: 8px 0; }
+        .viet-phonetic { font-size: 24px; color: var(--green); font-weight: 700; background: rgba(6,214,160,0.1); padding: 12px; border-radius: 12px; text-align: center; margin: 10px 0; }
         .btn-speak { background: #118ab2; border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; float: right; }
-        .meaning { margin-top: 15px; line-height: 1.5; font-size: 15px; clear: both; }
+        .meaning { margin-top: 15px; line-height: 1.6; border-top: 1px solid #ffffff1a; padding-top: 10px; }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">🇻🇳 TừĐiển Pro</div>
-        <p style="font-size: 12px; color: #8899bb">Học phát âm tiếng Anh chuẩn Việt</p>
+        <p style="font-size: 12px; color: #8899bb">Dịch tiếng Việt & Phát âm chuẩn Việt</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Nhập từ cần tra..." autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Nhập từ cần tra (vd: elephant)...">
         <button class="search-btn" onclick="doSearch()">🔍</button>
     </div>
 
     <div id="mainContent"></div>
 
 <script>
+// Hàm chế âm Việt hóa nâng cao
 function getVietPhonetic(word) {
     word = word.toLowerCase().trim();
     const dict = { 
-        'hello': 'He-lô', 'goodbye': 'Gút-bai', 'thank': 'Thenk', 
-        'beautiful': 'Biu-ti-fồl', 'computer': 'Kôm-piu-tờ', 'music': 'Miu-dịch' 
+        'elephant': 'E-lê-fần-t',
+        'goodbye': 'Gút-bai',
+        'hello': 'He-lô',
+        'beautiful': 'Biu-ti-fồl'
     };
     if (dict[word]) return dict[word];
     
-    // Quy tắc tự động chuyển đổi âm bồi cơ bản
-    return word.replace(/tion/g, 'sần').replace(/ture/g, 'chờ').replace(/oo/g, 'u')
-               .replace(/ee|ea/g, 'i').replace(/ch/g, 'ch').replace(/sh/g, 'sh')
-               .replace(/th/g, 'đ').replace(/ph/g, 'f').replace(/y$/g, 'i')
-               .replace(/ce$/g, 'x').replace(/ck/g, 'k')
-               .split('').join('-').toUpperCase(); // Trả về dạng âm tiết tách rời nếu không có trong dict
+    return word.replace(/tion/g, 'sần').replace(/ture/g, 'chờ')
+               .replace(/ph/g, 'f').replace(/th/g, 'đ')
+               .replace(/oo/g, 'u').replace(/ee|ea/g, 'i')
+               .replace(/ant$/g, 'ần-t').replace(/ent$/g, 'ần-t')
+               .toUpperCase().split('').join('-');
 }
 
 async function doSearch() {
     const word = document.getElementById('searchInput').value.trim();
     if (!word) return;
     const content = document.getElementById('mainContent');
-    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang tìm...</div>';
+    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang tra từ...</div>';
 
     try {
-        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-        if (!res.ok) throw new Error("Không tìm thấy từ này anh ơi!");
-        const data = await res.json();
-        const entry = data[0];
+        // 1. Lấy IPA và định nghĩa tiếng Anh
+        const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const dictData = await dictRes.json();
+        
+        // 2. Dịch nghĩa sang tiếng Việt qua Google Translate API miễn phí
+        const transRes = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(word)}`);
+        const transData = await transRes.json();
+        const vietMeaning = transData[0][0][0];
+
+        const ipa = dictData[0] ? dictData[0].phonetic : '';
 
         content.innerHTML = `
             <div class="result-card">
-                <button class="btn-speak" onclick="speak('${entry.word}')">🔊</button>
-                <div class="word-en">${entry.word}</div>
-                <div class="ipa">${entry.phonetic || ''}</div>
+                <button class="btn-speak" onclick="speak('${word}')">🔊</button>
+                <div class="word-en">${word}</div>
+                <div class="ipa">${ipa || ''}</div>
                 
-                <div class="viet-label">Cách đọc Việt hóa:</div>
-                <div class="viet-phonetic">${getVietPhonetic(entry.word)}</div>
+                <div style="font-size:12px;color:#8899bb;margin-top:10px">CÁCH ĐỌC VIỆT HÓA:</div>
+                <div class="viet-phonetic">${getVietPhonetic(word)}</div>
 
                 <div class="meaning">
-                    <strong>Nghĩa:</strong> ${entry.meanings[0].definitions[0].definition}
+                    <strong style="color:var(--yellow)">Nghĩa tiếng Việt:</strong> 
+                    <div style="font-size:18px; font-weight:700; margin-top:5px">${vietMeaning}</div>
                 </div>
             </div>`;
-        speak(entry.word);
+        speak(word);
     } catch (err) {
-        content.innerHTML = `<div style="color:#e63946;text-align:center;padding:20px;">${err.message}</div>`;
+        content.innerHTML = `<div style="color:#e63946;text-align:center;padding:20px;">Không tìm thấy từ này!</div>`;
     }
 }
 
