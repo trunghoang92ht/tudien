@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>TừĐiển Pro - Bản Chuẩn</title>
+    <title>TừĐiển Pro - Auto Update</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --dark: #1a1a2e; --card: #16213e; --yellow: #ffd166; --green: #06d6a0; --text: #eaeaea; }
@@ -15,9 +15,9 @@
         input { flex: 1; padding: 15px; background: var(--card); border: 2px solid rgba(255,209,102,0.3); border-radius: 15px; color: #fff; font-size: 16px; outline: none; }
         .search-btn { background: var(--yellow); border: none; padding: 0 20px; border-radius: 15px; font-size: 20px; cursor: pointer; }
         .result-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); position: relative; }
-        .word-en { font-size: 32px; font-weight: 800; color: #fff; text-transform: capitalize; }
+        .word-en { font-size: 32px; font-weight: 800; color: #fff; }
         .ipa { color: #8899bb; font-style: italic; margin-bottom: 10px; font-size: 14px; }
-        .viet-phonetic { font-size: 24px; color: var(--green); background: rgba(6,214,160,0.1); padding: 18px; border-radius: 12px; text-align: center; margin: 15px 0; border-left: 5px solid var(--green); line-height: 1.6; font-weight: 800; }
+        .viet-phonetic { font-size: 26px; color: var(--green); background: rgba(6,214,160,0.1); padding: 18px; border-radius: 12px; text-align: center; margin: 15px 0; border-left: 5px solid var(--green); font-weight: 800; text-transform: uppercase; }
         .btn-speak { background: #118ab2; border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; position: absolute; right: 20px; top: 20px; }
         .meaning-text { font-size: 20px; font-weight: 700; color: #fff; margin-top: 15px; border-top: 1px solid #ffffff1a; padding-top: 10px; }
     </style>
@@ -25,93 +25,55 @@
 <body>
     <header>
         <div class="logo">TừĐiển Pro</div>
-        <p style="font-size: 12px; color: #8899bb">Bản sửa lỗi hiển thị & Trọng âm chuẩn</p>
+        <p style="font-size: 12px; color: #8899bb">Hệ thống phiên âm Google tự động</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Vd: different, sorry...">
+        <input type="text" id="searchInput" placeholder="Nhập từ bất kỳ...">
         <button class="search-btn" onclick="doSearch()">🔍</button>
     </div>
 
     <div id="mainContent"></div>
 
 <script>
-// Danh sách từ điển ưu tiên (Luôn đúng 100%)
-const priorityDict = {
-    "different": "DI PHỜ RẦN TỜ",
-    "sorry": "XÓ RI",
-    "sport": "X PÓ TỜ",
-    "elephant": "E LÊ PHẦN TỜ",
-    "homework": "HÔM UỐC CỜ"
-};
-
-function getPhonetic(ipa, word) {
-    let lowerWord = word.toLowerCase();
-    if (priorityDict[lowerWord]) return priorityDict[lowerWord];
-
-    if (!ipa) return word.toUpperCase();
-
-    // Quy tắc chuyển đổi an toàn cho các từ khác
-    let text = ipa.toLowerCase()
-        .replace(/ˈ/g, ' stress ')
-        .replace(/r|ɹ/g, 'r').replace(/ɪ|iː/g, 'i')
-        .replace(/ə/g, 'ơ').replace(/ɔː|ɒ|ɔ/g, 'o')
-        .replace(/æ|e/g, 'e').replace(/ʊ|uː/g, 'u')
-        .replace(/ʌ/g, 'ă').replace(/θ/g, 'th').replace(/ð/g, 'đ')
-        .replace(/ʃ/g, 'sh').replace(/tʃ/g, 'ch').replace(/dʒ/g, 'giờ')
-        .replace(/s/g, 'x').replace(/z/g, 'z').replace(/f/g, 'ph')
-        .replace(/n/g, 'n').replace(/m/g, 'm')
-        .replace(/t\b|t\s/g, ' tờ ').replace(/k\b|k\s/g, ' cờ ').replace(/p\b|p\s/g, ' pờ ')
-        .replace(/[^a-z àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệđìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ]/g, '');
-
-    let parts = text.split(/\s+/).filter(x => x !== "");
-    let result = [];
-    let addStress = false;
-
-    parts.forEach(p => {
-        if (p === "stress") {
-            addStress = true;
-        } else {
-            let val = p;
-            if (addStress) {
-                val = val.replace(/([aeiouăơêôiy])/, '$1́').toUpperCase();
-                addStress = false;
-            }
-            result.push(val);
-        }
-    });
-
-    return result.join(' ').toUpperCase();
-}
-
 async function doSearch() {
     const word = document.getElementById('searchInput').value.trim();
     if (!word) return;
     const content = document.getElementById('mainContent');
-    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang tải...</div>';
+    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang đồng bộ dữ liệu...</div>';
 
     try {
-        const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-        const dictData = await dictRes.json();
-        const transRes = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(word)}`);
+        // Lấy nghĩa và phiên âm từ Google Translate
+        const transUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&dt=rm&q=${encodeURI(word)}`;
+        const transRes = await fetch(transUrl);
         const transData = await transRes.json();
 
+        // Lấy IPA từ Dictionary API (nếu có)
+        const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const dictData = await dictRes.json();
+        
         let ipa = "";
         if(dictData[0]) {
             ipa = dictData[0].phonetic || (dictData[0].phonetics.find(p => p.text) || {}).text || "";
         }
+
+        // Google Translate trả về phiên âm ở [1][0][0] hoặc [1][0][1]
+        let vietPhonetic = transData[1] ? (transData[1][0][1] || transData[1][0][0]) : word;
+        
+        // Làm sạch phiên âm để dễ đọc kiểu Việt Nam
+        vietPhonetic = vietPhonetic.replace(/[\/\(\)]/g, '').replace(/-/g, ' ');
 
         content.innerHTML = `
             <div class="result-card">
                 <button class="btn-speak" onclick="speak('${word}')">🔊</button>
                 <div class="word-en">${word}</div>
                 <div class="ipa">${ipa}</div>
-                <div class="viet-phonetic">${getPhonetic(ipa, word)}</div>
+                <div class="viet-phonetic">${vietPhonetic}</div>
                 <div class="meaning-text">${transData[0][0][0]}</div>
             </div>`;
         speak(word);
     } catch (err) {
-        content.innerHTML = `<div style="padding:20px;text-align:center;">Lỗi dữ liệu!</div>`;
+        content.innerHTML = `<div style="padding:20px;text-align:center;">Lỗi kết nối server!</div>`;
     }
 }
 
