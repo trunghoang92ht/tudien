@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>TừĐiển Pro – Tự Động Trọng Âm</title>
+    <title>TừĐiển Pro - Bản Fix Triệt Để</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --dark: #1a1a2e; --card: #16213e; --yellow: #ffd166; --green: #06d6a0; --text: #eaeaea; }
@@ -13,69 +13,80 @@
         .logo { font-family: 'Baloo 2', cursive; font-size: 28px; color: var(--yellow); }
         .search-box { display: flex; gap: 8px; margin-bottom: 20px; }
         input { flex: 1; padding: 15px; background: var(--card); border: 2px solid rgba(255,209,102,0.3); border-radius: 15px; color: #fff; font-size: 16px; outline: none; }
-        .search-btn { background: var(--yellow); border: none; padding: 0 20px; border-radius: 15px; font-size: 20px; }
+        .search-btn { background: var(--yellow); border: none; padding: 0 20px; border-radius: 15px; font-size: 20px; cursor: pointer; }
         .result-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); position: relative; }
-        .word-en { font-size: 32px; font-weight: 800; color: #fff; text-transform: lowercase; }
-        .ipa { color: #8899bb; font-style: italic; margin-bottom: 10px; font-size: 16px; }
-        .viet-phonetic { font-size: 24px; color: var(--green); background: rgba(6,214,160,0.15); padding: 18px; border-radius: 12px; text-align: center; margin: 15px 0; border-left: 5px solid var(--green); line-height: 1.4; }
-        .viet-phonetic b { color: #fff; text-decoration: underline; font-size: 28px; }
-        .btn-speak { background: #118ab2; border: none; color: #fff; width: 55px; height: 55px; border-radius: 50%; font-size: 28px; position: absolute; right: 20px; top: 20px; }
+        .word-en { font-size: 32px; font-weight: 800; color: #fff; }
+        .ipa { color: #8899bb; font-style: italic; margin-bottom: 10px; font-size: 14px; }
+        .viet-phonetic { font-size: 24px; color: var(--green); background: rgba(6,214,160,0.15); padding: 18px; border-radius: 12px; text-align: center; margin: 15px 0; border-left: 5px solid var(--green); line-height: 1.5; }
+        .stress { color: #fff; text-decoration: underline; font-weight: 900; }
+        .btn-speak { background: #118ab2; border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; position: absolute; right: 20px; top: 20px; }
         .meaning-text { font-size: 20px; font-weight: 700; color: #fff; margin-top: 15px; border-top: 1px solid #ffffff1a; padding-top: 10px; }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">🇻🇳 TừĐiển Pro</div>
-        <p style="font-size: 13px; color: #8899bb">Tự động nhận diện trọng âm & Việt hóa</p>
+        <div class="logo">TừĐiển Pro</div>
+        <p style="font-size: 12px; color: #8899bb">Cập nhật: Tự động lọc sạch ký tự lạ</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Tra từ bất kỳ (vd: sorry)..." autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Tra từ (Vd: sorry, different)...">
         <button class="search-btn" onclick="doSearch()">🔍</button>
     </div>
 
     <div id="mainContent"></div>
 
 <script>
-function autoVietPhonetic(ipa) {
+function cleanPhonetic(ipa) {
     if (!ipa) return "";
     
-    // 1. Tách trọng âm chính (dấu ˈ)
-    let parts = ipa.replace(/\//g, '').split('ˈ');
-    let stressIndex = ipa.includes('ˈ') ? 1 : 0;
-    
-    let process = (text) => {
-        return text.toLowerCase()
-            .replace(/r/g, 'rờ').replace(/s/g, 'x').replace(/z/g, 'zờ')
-            .replace(/θ/g, 'th').replace(/ð/g, 'đ').replace(/ʃ/g, 'sh')
-            .replace(/tʃ/g, 'ch').replace(/dʒ/g, 'giờ')
-            .replace(/ɔː|ɒ|ɔ/g, 'o').replace(/ʊ|u:/g, 'u').replace(/ʌ/g, 'ă')
-            .replace(/æ|e/g, 'e').replace(/ə/g, 'ơ').replace(/ɪ|i:/g, 'i')
-            .replace(/aɪ/g, 'ai').replace(/aʊ/g, 'ao')
-            .replace(/st/g, 'x tờ').replace(/sp/g, 'x pờ').replace(/sk/g, 'x cơ')
-            .replace(/t\b|t(?=\.)/g, ' tờ').replace(/k\b/g, ' cờ').replace(/p\b/g, ' pờ')
-            .replace(/\./g, ' ').trim();
-    };
+    // Quy tắc chuyển đổi triệt để các ký tự lạ
+    let text = ipa.toLowerCase()
+        .replace(/[ˈˌ]/g, ' STRESS_HERE ') // Đánh dấu trọng âm
+        .replace(/\//g, '')
+        .replace(/r|ɹ/g, 'r')
+        .replace(/ɪ|iː/g, 'i')
+        .replace(/e|æ/g, 'e')
+        .replace(/ə/g, 'ơ')
+        .replace(/ɔː|ɒ|ɔ/g, 'o')
+        .replace(/ʊ|uː/g, 'u')
+        .replace(/ʌ/g, 'ă')
+        .replace(/θ/g, 'th').replace(/ð/g, 'đ')
+        .replace(/ʃ/g, 'sh').replace(/tʃ/g, 'ch').replace(/dʒ/g, 'giờ')
+        .replace(/s/g, 'x').replace(/z/g, 'zờ')
+        .replace(/st/g, 'x tờ').replace(/sp/g, 'x pờ').replace(/sk/g, 'x cơ')
+        .replace(/t\b|t(?=\s)/g, ' tờ').replace(/p\b/g, ' pờ').replace(/k\b/g, ' cờ');
 
-    let result = "";
-    if (ipa.includes('ˈ')) {
-        let truoc = process(parts[0]);
-        let trongAm = process(parts[1].split('ˌ')[0]); // Lấy cụm có trọng âm
-        // Thêm dấu sắc cho âm tiết đầu của cụm trọng âm
-        trongAm = trongAm.replace(/([aeiouăơêôaiy])/i, '$1́'); 
-        result = `${truoc} <b>${trongAm}</b>`;
-    } else {
-        result = process(ipa);
+    let words = text.split(/\s+/);
+    let finalArr = words.map(w => {
+        if (w === "STRESS_HERE") return "STRESS_MARK";
+        let cleaned = w.replace(/[^a-záàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ]/g, '');
+        return cleaned;
+    }).filter(v => v !== "");
+
+    // Xử lý hiển thị trọng âm
+    let output = "";
+    for (let i = 0; i < finalArr.length; i++) {
+        if (finalArr[i] === "STRESS_MARK") {
+            if (finalArr[i+1]) {
+                let stressWord = finalArr[i+1].toUpperCase();
+                // Thêm dấu sắc vào nguyên âm đầu tiên của từ trọng âm
+                stressWord = stressWord.replace(/([AEIOUĂƠÊÔAIY])/, '$1́');
+                output += `<span class="stress">${stressWord}</span> `;
+                i++; 
+            }
+        } else {
+            output += finalArr[i].toLowerCase() + " ";
+        }
     }
-
-    return result.toUpperCase().replace(/\s+/g, ' ');
+    return output.trim().toUpperCase();
 }
 
 async function doSearch() {
     const word = document.getElementById('searchInput').value.trim();
     if (!word) return;
     const content = document.getElementById('mainContent');
-    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang quét từ...</div>';
+    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang quét...</div>';
 
     try {
         const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
@@ -93,12 +104,12 @@ async function doSearch() {
                 <button class="btn-speak" onclick="speak('${word}')">🔊</button>
                 <div class="word-en">${word}</div>
                 <div class="ipa">${ipa}</div>
-                <div class="viet-phonetic">${autoVietPhonetic(ipa)}</div>
+                <div class="viet-phonetic">${cleanPhonetic(ipa)}</div>
                 <div class="meaning-text">${transData[0][0][0]}</div>
             </div>`;
         speak(word);
     } catch (err) {
-        content.innerHTML = `<div style="padding:20px;text-align:center;">Lỗi mạng hoặc không tìm thấy từ!</div>`;
+        content.innerHTML = `<div style="padding:20px;text-align:center;">Không tìm thấy từ này!</div>`;
     }
 }
 
