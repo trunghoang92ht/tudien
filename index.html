@@ -1,123 +1,99 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>TừĐiển Pro – Đọc Như Người Việt</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --red: #e63946; --yellow: #ffd166; --green: #06d6a0; --blue: #118ab2;
-    --dark: #1a1a2e; --card: #16213e; --text: #eaeaea; --muted: #8899bb;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--dark);
-    color: var(--text);
-    min-height: 100vh;
-  }
-  .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 100px; }
-  header { text-align: center; margin-bottom: 20px; }
-  .logo { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 800; color: var(--yellow); }
-  .search-box { position: relative; margin-bottom: 20px; }
-  input { width: 100%; padding: 15px 20px; background: var(--card); border: 2px solid rgba(255,209,102,0.2); border-radius: 15px; color: #fff; font-size: 16px; outline: none; }
-  .search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--yellow); border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
-  .result-card { background: var(--card); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
-  .word-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-  .word-en { font-size: 32px; font-weight: 800; color: #fff; }
-  .ipa { color: var(--muted); font-style: italic; }
-  .viet-phonetic { font-size: 24px; color: var(--green); font-weight: 700; margin: 10px 0; background: rgba(6,214,160,0.1); padding: 10px; border-radius: 10px; text-align: center; }
-  .meaning { margin-top: 15px; line-height: 1.6; }
-  .btn-speak { background: var(--blue); border: none; color: #fff; padding: 10px 15px; border-radius: 50%; cursor: pointer; font-size: 20px; }
-  .loading { text-align: center; padding: 20px; color: var(--muted); }
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #16213e; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #ffffff1a; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>TừĐiển Pro – Đọc Như Người Việt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --dark: #1a1a2e; --card: #16213e; --yellow: #ffd166; --green: #06d6a0; --text: #eaeaea; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Nunito', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; padding: 20px 16px; }
+        header { text-align: center; margin-bottom: 20px; }
+        .logo { font-family: 'Baloo 2', cursive; font-size: 28px; color: var(--yellow); }
+        .search-box { position: relative; display: flex; gap: 8px; }
+        input { flex: 1; padding: 15px; background: var(--card); border: 2px solid rgba(255,209,102,0.2); border-radius: 15px; color: #fff; font-size: 16px; outline: none; }
+        .search-btn { background: var(--yellow); border: none; padding: 0 20px; border-radius: 15px; font-size: 20px; cursor: pointer; }
+        .result-card { background: var(--card); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); animation: slide 0.3s ease; }
+        @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .word-en { font-size: 32px; font-weight: 800; color: #fff; }
+        .ipa { color: #8899bb; font-style: italic; margin-bottom: 10px; }
+        .viet-label { font-size: 12px; color: #8899bb; text-transform: uppercase; margin-top: 15px; }
+        .viet-phonetic { font-size: 26px; color: var(--green); font-weight: 700; background: rgba(6,214,160,0.1); padding: 12px; border-radius: 12px; text-align: center; margin: 8px 0; }
+        .btn-speak { background: #118ab2; border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; float: right; }
+        .meaning { margin-top: 15px; line-height: 1.5; font-size: 15px; clear: both; }
+    </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo">🇻🇳 TừĐiển Pro</div>
-    <p style="font-size: 12px; color: var(--muted)">Phát âm tiếng Anh theo kiểu Việt</p>
-  </header>
+    <header>
+        <div class="logo">🇻🇳 TừĐiển Pro</div>
+        <p style="font-size: 12px; color: #8899bb">Học phát âm tiếng Anh chuẩn Việt</p>
+    </header>
 
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh (ví dụ: hello)...">
-    <button class="search-btn" onclick="doSearch()">🔍</button>
-  </div>
-
-  <div id="mainContent">
-    <div style="text-align: center; padding: 40px; color: var(--muted)">
-      <p>Nhập từ để bắt đầu tra cứu!</p>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Nhập từ cần tra..." autocomplete="off">
+        <button class="search-btn" onclick="doSearch()">🔍</button>
     </div>
-  </div>
-</div>
 
-<div class="bottom-nav">
-  <span>🔍 Tra từ</span>
-  <span>⭐ Đã lưu</span>
-</div>
+    <div id="mainContent"></div>
 
 <script>
-// Hàm mô phỏng cách đọc Việt hóa (Vietnamese Phonetic)
 function getVietPhonetic(word) {
-  const map = {
-    'hello': 'He-lô',
-    'computer': 'Kôm-piu-tờ',
-    'beautiful': 'Biu-ti-fồl',
-    'sport': 'Xpót',
-    'music': 'Miu-dịch'
-  };
-  return map[word.toLowerCase()] || 'Đang cập nhật âm...';
+    word = word.toLowerCase().trim();
+    const dict = { 
+        'hello': 'He-lô', 'goodbye': 'Gút-bai', 'thank': 'Thenk', 
+        'beautiful': 'Biu-ti-fồl', 'computer': 'Kôm-piu-tờ', 'music': 'Miu-dịch' 
+    };
+    if (dict[word]) return dict[word];
+    
+    // Quy tắc tự động chuyển đổi âm bồi cơ bản
+    return word.replace(/tion/g, 'sần').replace(/ture/g, 'chờ').replace(/oo/g, 'u')
+               .replace(/ee|ea/g, 'i').replace(/ch/g, 'ch').replace(/sh/g, 'sh')
+               .replace(/th/g, 'đ').replace(/ph/g, 'f').replace(/y$/g, 'i')
+               .replace(/ce$/g, 'x').replace(/ck/g, 'k')
+               .split('').join('-').toUpperCase(); // Trả về dạng âm tiết tách rời nếu không có trong dict
 }
 
 async function doSearch() {
-  const word = document.getElementById('searchInput').value.trim();
-  if (!word) return;
+    const word = document.getElementById('searchInput').value.trim();
+    if (!word) return;
+    const content = document.getElementById('mainContent');
+    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang tìm...</div>';
 
-  const content = document.getElementById('mainContent');
-  content.innerHTML = '<div class="loading">Đang tra từ...</div>';
+    try {
+        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        if (!res.ok) throw new Error("Không tìm thấy từ này anh ơi!");
+        const data = await res.json();
+        const entry = data[0];
 
-  try {
-    // Sử dụng API từ điển miễn phí (không cần Key bảo mật)
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-    if (!res.ok) throw new Error("Không tìm thấy từ");
-    const data = await res.json();
-    const entry = data[0];
+        content.innerHTML = `
+            <div class="result-card">
+                <button class="btn-speak" onclick="speak('${entry.word}')">🔊</button>
+                <div class="word-en">${entry.word}</div>
+                <div class="ipa">${entry.phonetic || ''}</div>
+                
+                <div class="viet-label">Cách đọc Việt hóa:</div>
+                <div class="viet-phonetic">${getVietPhonetic(entry.word)}</div>
 
-    content.innerHTML = `
-      <div class="result-card">
-        <div class="word-head">
-          <div>
-            <div class="word-en">${entry.word}</div>
-            <div class="ipa">${entry.phonetic || ''}</div>
-          </div>
-          <button class="btn-speak" onclick="speak('${entry.word}')">🔊</button>
-        </div>
-        
-        <div style="font-size: 12px; color: var(--muted); text-transform: uppercase;">Cách đọc Việt hóa:</div>
-        <div class="viet-phonetic">${getVietPhonetic(entry.word)}</div>
-
-        <div class="meaning">
-          <strong>Nghĩa:</strong> ${entry.meanings[0].definitions[0].definition}
-        </div>
-      </div>
-    `;
-    speak(entry.word);
-  } catch (err) {
-    content.innerHTML = `<div style="color:var(--red); text-align:center; padding:20px;">${err.message}</div>`;
-  }
+                <div class="meaning">
+                    <strong>Nghĩa:</strong> ${entry.meanings[0].definitions[0].definition}
+                </div>
+            </div>`;
+        speak(entry.word);
+    } catch (err) {
+        content.innerHTML = `<div style="color:#e63946;text-align:center;padding:20px;">${err.message}</div>`;
+    }
 }
 
 function speak(text) {
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = 'en-US';
-  window.speechSynthesis.speak(msg);
+    window.speechSynthesis.cancel();
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'en-US';
+    msg.rate = 0.8; 
+    window.speechSynthesis.speak(msg);
 }
 
-document.getElementById('searchInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') doSearch();
-});
+document.getElementById('searchInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') doSearch(); });
 </script>
 </body>
 </html>
