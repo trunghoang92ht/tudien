@@ -1,237 +1,142 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Việt Hóa Tiếng Anh Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --primary: #fbbf24;
-            --accent: #2dd4bf;
-            --text: #f1f5f9;
-            --border: #334155;
-        }
+export default function App() { const sampleWord = { word: "computer", ipa: "/kəmˈpjuːtər/", vietnamesePronunciation: "cờm 'piu đờ", meaning: "máy tính" };
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+const speakWord = (text) => { const utterance = new SpeechSynthesisUtterance(text); utterance.lang = "en-US"; utterance.rate = 0.9; speechSynthesis.speak(utterance); };
 
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 20px;
-            background-image: radial-gradient(circle at top right, rgba(45, 212, 191, 0.1), transparent);
-        }
+return ( <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center"> <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl p-8"> <h1 className="text-3xl font-bold mb-6 text-center"> English → Việt Hoá Pronunciation Dictionary </h1>
 
-        .container {
-            width: 100%;
-            max-width: 450px;
-            background: var(--card);
-            padding: 30px;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
-            text-align: center;
-        }
+<div className="flex gap-3 mb-6">
+      <input
+        type="text"
+        placeholder="Nhập từ tiếng Anh..."
+        className="flex-1 border rounded-2xl px-4 py-3 text-lg outline-none"
+      />
 
-        h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: 32px;
-            color: var(--primary);
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .sub-title {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 25px;
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 18px;
-            border-radius: 16px;
-            border: 2px solid var(--border);
-            background: #0f172a;
-            color: white;
-            font-size: 18px;
-            font-weight: 700;
-            outline: none;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
-        }
-
-        button {
-            width: 100%;
-            padding: 16px;
-            border-radius: 16px;
-            border: none;
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            color: #0f172a;
-            font-size: 18px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
-        }
-
-        button:active { transform: scale(0.97); }
-
-        .result-box {
-            margin-top: 30px;
-            padding: 25px;
-            background: #0f172a;
-            border-radius: 20px;
-            border: 1px dashed var(--accent);
-            display: none;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .boi-text {
-            font-family: 'Baloo 2', cursive;
-            font-size: 38px;
-            font-weight: 800;
-            color: var(--accent);
-            line-height: 1.2;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .meaning {
-            font-size: 18px;
-            color: #94a3b8;
-            font-weight: 600;
-        }
-
-        .footer {
-            margin-top: 25px;
-            font-size: 12px;
-            color: #475569;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>VIỆT HÓA 100%</h1>
-    <p class="sub-title">Đọc tiếng Anh chuẩn như tiếng Việt</p>
-
-    <div class="input-group">
-        <input type="text" id="tuInput" placeholder="Nhập từ tiếng Anh..." onkeypress="if(event.key==='Enter') traTu()">
+      <button className="bg-black text-white px-6 rounded-2xl hover:opacity-90 transition">
+        Search
+      </button>
     </div>
 
-    <button onclick="traTu()">CHUYỂN SANG TIẾNG VIỆT</button>
+    <div className="border rounded-3xl p-6 bg-gray-50">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-3xl font-bold capitalize">
+            {sampleWord.word}
+          </h2>
 
-    <div id="resultBox" class="result-box">
-        <div id="boiOutput" class="boi-text"></div>
-        <div id="meaningOutput" class="meaning"></div>
+          <p className="text-gray-600 text-lg mt-1">
+            {sampleWord.ipa}
+          </p>
+        </div>
+
+        <button
+          onClick={() => speakWord(sampleWord.word)}
+          className="bg-blue-500 text-white px-5 py-3 rounded-2xl text-lg hover:opacity-90 transition"
+        >
+          🔊 Speak
+        </button>
+      </div>
+
+      <div className="space-y-5">
+        <div>
+          <p className="text-sm uppercase tracking-wide text-gray-500 mb-1">
+            Nghĩa tiếng Việt
+          </p>
+
+          <p className="text-2xl font-semibold">
+            {sampleWord.meaning}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-sm uppercase tracking-wide text-gray-500 mb-1">
+            Việt hoá cách đọc (accent Mỹ)
+          </p>
+
+          <p className="text-3xl font-bold text-red-500">
+            {sampleWord.vietnamesePronunciation}
+          </p>
+        </div>
+      </div>
     </div>
 
-    <div class="footer">Dành riêng cho người Việt • Dễ đọc • Dễ nhớ</div>
+    <div className="mt-8">
+      <h3 className="text-xl font-bold mb-4">
+        Ví dụ
+      </h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[
+          {
+            word: "water",
+            ipa: "/ˈwɔːt̬ɚ/",
+            vn: "'qua đờ",
+            meaning: "nước"
+          },
+          {
+            word: "hello",
+            ipa: "/həˈloʊ/",
+            vn: "hờ 'lâu",
+            meaning: "xin chào"
+          },
+          {
+            word: "america",
+            ipa: "/əˈmerɪkə/",
+            vn: "ờ 'me rờ kờ",
+            meaning: "nước Mỹ"
+          },
+          {
+            word: "better",
+            ipa: "/ˈbet̬ɚ/",
+            vn: "'be đờ",
+            meaning: "tốt hơn"
+          }
+        ].map((item) => (
+          <div
+            key={item.word}
+            className="border rounded-2xl p-4 bg-white"
+          >
+            <div className="flex items-center justify-between">
+              <h4 className="text-2xl font-bold capitalize">
+                {item.word}
+              </h4>
+
+              <button
+                onClick={() => speakWord(item.word)}
+                className="text-xl"
+              >
+                🔊
+              </button>
+            </div>
+
+            <p className="text-gray-500 mt-1">
+              {item.ipa}
+            </p>
+
+            <p className="mt-3 text-red-500 font-bold text-2xl">
+              {item.vn}
+            </p>
+
+            <p className="mt-2 text-lg">
+              {item.meaning}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="mt-10 border-t pt-6 text-gray-500 text-sm leading-7">
+      <p>
+        Quy ước Việt hoá:
+      </p>
+
+      <ul className="list-disc ml-6 mt-2 space-y-1">
+        <li>Dấu ' dùng để đánh trọng âm</li>
+        <li>Âm T kiểu Mỹ giữa từ → đ</li>
+        <li>Viết theo cách người Việt dễ đọc accent Mỹ</li>
+        <li>Không dịch sát IPA 100%, ưu tiên dễ bắt chước</li>
+      </ul>
+    </div>
+  </div>
 </div>
 
-<script>
-    // BỘ NÃO ƯU TIÊN - LUÔN ĐÚNG THEO Ý ANH
-    const DATABASE = {
-        'cat': 'KÉ TỜ',
-        'book': 'BÚ CỜ',
-        'application': 'E PỜ LI CÂY SẦN',
-        'digital': 'ĐÍ GI TỒ LỜ',
-        'sport': 'X PÓT TỜ',
-        'map': 'MÉ PỜ',
-        'sit': 'XÍ TỜ',
-        'dog': 'ĐÓ GỜ',
-        'engineer': 'EN GI NIA',
-        'school': 'X CU LỜ'
-    };
-
-    async function traTu() {
-        const word = document.getElementById('tuInput').value.trim().toLowerCase();
-        if (!word) return;
-
-        let phienAmViet = "";
-        let nghiaViet = "...";
-
-        // 1. Kiểm tra bảng tra cứu ưu tiên
-        if (DATABASE[word]) {
-            phienAmViet = DATABASE[word];
-        } else {
-            // 2. Thuật toán dự phòng (ghép vần mượt)
-            phienAmViet = logicVietHoa(word);
-        }
-
-        // 3. Lấy nghĩa từ Google
-        try {
-            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(word)}`);
-            const data = await res.json();
-            nghiaViet = data[0][0][0];
-        } catch (e) {
-            nghiaViet = "Không tìm thấy nghĩa";
-        }
-
-        // Hiển thị kết quả
-        document.getElementById('boiOutput').innerText = phienAmViet;
-        document.getElementById('meaningOutput').innerText = nghiaViet;
-        document.getElementById('resultBox').style.display = 'block';
-
-        // Phát âm để anh nghe nhịp
-        phatAm(word);
-    }
-
-    function logicVietHoa(word) {
-        let s = word;
-        
-        // Thay các cụm âm cố định
-        s = s.replace(/tion/g, ' sần').replace(/ture/g, ' chơ').replace(/ple/g, ' pờ lờ');
-        
-        // Tách âm đuôi
-        s = s.replace(/p$/g, ' pờ').replace(/t$/g, ' tờ').replace(/k$/g, ' cờ')
-             .replace(/s$/g, ' sờ').replace(/d$/g, ' dờ').replace(/l$/g, ' lờ');
-
-        // Việt hóa nguyên âm đơn
-        s = s.replace(/a/g, 'e').replace(/o/g, 'ô').replace(/u/g, 'u').replace(/i/g, 'i');
-
-        // Thêm trọng âm giả định vào âm tiết đầu
-        let parts = s.trim().split(/\s+/);
-        if (parts.length > 0) {
-            parts[0] = parts[0].replace(/[eiouô]/i, (m) => m + '́');
-        }
-
-        return parts.join(' ').toUpperCase()
-                    .replace(/É/g, 'É').replace(/Í/g, 'Í').replace(/Ú/g, 'Ú').replace(/Ố/g, 'Ố')
-                    .replace(/\s+/g, ' ');
-    }
-
-    function phatAm(t) {
-        window.speechSynthesis.cancel();
-        const m = new SpeechSynthesisUtterance(t);
-        m.lang = 'en-US';
-        m.rate = 0.8;
-        window.speechSynthesis.speak(m);
-    }
-</script>
-
-</body>
-</html>
+); }
