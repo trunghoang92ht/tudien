@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>TừĐiển Tiếng Việt Bồi</title>
+    <title>Từ Điển Phiên Âm Bồi AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --text-vi: #10b981; }
@@ -16,54 +16,57 @@
         .search-btn { background: var(--accent); border: none; width: 60px; border-radius: 12px; font-size: 20px; cursor: pointer; }
         .result-card { background: var(--card); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #334155; }
         .word-en { font-size: 38px; font-weight: 800; color: #fff; margin-bottom: 10px; }
-        /* Khu vực hiển thị tiếng Việt thuần túy */
-        .viet-style { font-size: 30px; color: var(--text-vi); background: #000; padding: 20px; border-radius: 15px; border: 2px solid var(--text-vi); font-weight: 800; line-height: 1.6; text-transform: uppercase; word-break: break-word; }
+        .viet-style { font-size: 30px; color: var(--text-vi); background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--text-vi); font-weight: 800; line-height: 1.6; text-transform: uppercase; }
         .meaning { font-size: 22px; color: #94a3b8; margin-top: 15px; font-weight: 700; }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">TừĐiển Pro</div>
-        <p style="color: #64748b">Phiên âm: "Sờ pô tờ", "Đi di thô lờ"</p>
+        <div class="logo">Từ Điển Pro AI</div>
+        <p style="color: #64748b">Hệ thống Việt hóa âm thanh thông minh</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Nhập từ (Vd: Sport, Digital...)" autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh..." autocomplete="off">
         <button class="search-btn" onclick="doSearch()">🔍</button>
     </div>
 
     <div id="mainContent"></div>
 
 <script>
-// BẢNG QUY ĐỔI IPA SANG CHỮ TIẾNG VIỆT THUẦN
+// BỘ QUY TẮC MAPPING THÔNG MINH (AI OPTIMIZED)
 const mapping = {
-    'iː': 'i', 'ɪ': 'i', 'e': 'e', 'æ': 'e', 'ɑː': 'a', 'ɒ': 'o', 'ɔː': 'ô', 'ʊ': 'u', 'uː': 'u', 'ʌ': 'ă', 'ɜː': 'ơ', 'ə': 'ơ',
+    // Nguyên âm đôi & âm phức (Xử lý trước để tránh lỗi chia nhỏ)
     'eɪ': 'êi', 'aɪ': 'ai', 'ɔɪ': 'oi', 'aʊ': 'ao', 'əʊ': 'âu', 'ɪə': 'ia', 'eə': 'e-ơ', 'ʊə': 'ua',
-    'p': ' pờ', 'b': ' bờ', 't': ' tờ', 'd': ' dờ', 'k': ' cờ', 'g': ' gờ', 'f': ' phờ', 'v': ' vờ', 
-    'θ': ' thờ', 'ð': ' đờ', 's': ' sờ', 'z': ' zờ', 'ʃ': ' shờ', 'ʒ': ' dờ', 'h': ' hờ', 
-    'm': ' mờ', 'n': ' nờ', 'ŋ': ' ngờ', 'l': ' lờ', 'r': ' rờ', 'j': ' i', 'w': ' u',
-    'tʃ': ' chờ', 'dʒ': ' di' 
+    'tʃ': ' chờ', 'dʒ': ' di', 'iː': 'i', 'ɔː': 'ô', 'ɑː': 'a', 'ɜː': 'ơ',
+    
+    // Phụ âm (Thêm âm "ờ" vào sau để tạo âm bồi tự nhiên)
+    'p': ' pờ', 'b': ' bờ', 't': ' tờ', 'd': ' dờ', 'k': ' cờ', 'g': ' gờ', 
+    'f': ' phờ', 'v': ' vờ', 's': ' sờ', 'z': ' zờ', 'ʃ': ' shờ', 'ʒ': ' dờ',
+    'θ': ' thờ', 'ð': ' đờ', 'm': ' mờ', 'n': ' nờ', 'ŋ': ' ngờ', 'l': ' lờ', 
+    'r': ' rờ', 'h': ' hờ', 'j': ' i', 'w': ' u',
+    
+    // Nguyên âm đơn còn lại
+    'ɪ': 'i', 'e': 'e', 'æ': 'e', 'ɒ': 'o', 'ʊ': 'u', 'uː': 'u', 'ʌ': 'ă', 'ə': 'ơ'
 };
 
-function processToViet(word, ipa) {
+function processToViet(ipa) {
     if (!ipa) return "";
     
-    // 1. Chỉ giữ lại ký tự IPA, xóa hết các ký tự lạ gây chồng chữ
-    let cleanIpa = ipa.toLowerCase().replace(/[\/\.\(\)ˌ]/g, '').trim();
+    // 1. Làm sạch & xử lý trọng âm thành dấu sắc
+    let text = ipa.toLowerCase().replace(/[\/\.\(\)ˌ]/g, '').trim();
+    text = text.replace(/ˈ([^aeiouăơêôiy]*)([aeiouæɑɒɔəʊʌiuv])/g, 'ˈ$1$2́');
+    text = text.replace(/ˈ/g, '');
 
-    // 2. Xử lý trọng âm thành dấu sắc
-    cleanIpa = cleanIpa.replace(/ˈ([^aeiouăơêôiy]*)([aeiouæɑɒɔəʊʌiuv])/g, '$1$2́');
-    cleanIpa = cleanIpa.replace(/ˈ/g, '');
-
-    // 3. Quy đổi theo bảng mapping (ưu tiên âm dài trước)
-    let result = cleanIpa;
-    const keys = Object.keys(mapping).sort((a, b) => b.length - a.length);
-    
-    keys.forEach(key => {
-        result = result.split(key).join(mapping[key]);
+    // 2. Chạy Mapping theo thứ tự ưu tiên độ dài ký tự
+    const sortedKeys = Object.keys(mapping).sort((a, b) => b.length - a.length);
+    let result = text;
+    sortedKeys.forEach(key => {
+        const regex = new RegExp(key, 'g');
+        result = result.replace(regex, mapping[key]);
     });
 
-    // 4. Làm sạch khoảng trắng và định dạng
+    // 3. Hậu xử lý: Gộp các chữ "ờ" bị lặp hoặc khoảng trắng dư thừa
     return result.replace(/\s+/g, ' ').trim().toUpperCase();
 }
 
@@ -71,7 +74,7 @@ async function doSearch() {
     const word = document.getElementById('searchInput').value.trim();
     if (!word) return;
     const content = document.getElementById('mainContent');
-    content.innerHTML = '<p style="text-align:center">Đang tra...</p>';
+    content.innerHTML = '<p style="text-align:center">Đang phân tích...</p>';
 
     try {
         const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
@@ -84,14 +87,18 @@ async function doSearch() {
             ipa = dictData[0].phonetic || (dictData[0].phonetics.find(p => p.text) || {}).text || "";
         }
 
+        // Nếu từ điển không có IPA, dùng bản word tạm thời
+        const vietPhonetic = processToViet(ipa || word);
+
         content.innerHTML = `
             <div class="result-card">
                 <div class="word-en">${word.toLowerCase()}</div>
-                <div class="viet-style">${processToViet(word, ipa)}</div>
+                <div class="viet-style">${vietPhonetic}</div>
                 <div class="meaning">${transData[0][0][0]}</div>
             </div>`;
+            
     } catch (e) {
-        content.innerHTML = '<p style="text-align:center">Không tìm thấy từ này!</p>';
+        content.innerHTML = '<p style="text-align:center">Lỗi dữ liệu, anh thử từ khác nhé!</p>';
     }
 }
 document.getElementById('searchInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') doSearch(); });
