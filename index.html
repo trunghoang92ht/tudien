@@ -3,84 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>TừĐiển Pro - Hệ Thống Mapping IPA</title>
+    <title>TừĐiển Tiếng Việt Bồi</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #1a1a2e; --card: #16213e; --yellow: #ffd166; --green: #06d6a0; --text: #eaeaea; }
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --text-vi: #10b981; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Nunito', sans-serif; background: var(--dark); color: var(--text); padding: 20px 16px; }
-        header { text-align: center; margin-bottom: 25px; }
-        .logo { font-family: 'Baloo 2', cursive; font-size: 32px; color: var(--yellow); }
-        .search-box { display: flex; gap: 10px; margin-bottom: 25px; }
-        input { flex: 1; padding: 18px; background: var(--card); border: 2px solid rgba(255,209,102,0.2); border-radius: 18px; color: #fff; font-size: 18px; outline: none; }
-        .search-btn { background: var(--yellow); border: none; width: 60px; border-radius: 18px; font-size: 22px; cursor: pointer; }
-        .result-card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
-        .word-en { font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 5px; }
-        .ipa-label { color: #8899bb; font-size: 14px; margin-bottom: 10px; display: block; }
-        .viet-phonetic { font-size: 28px; color: var(--green); background: rgba(6,214,160,0.1); padding: 25px; border-radius: 20px; text-align: center; margin: 20px 0; border: 2px solid var(--green); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .meaning-text { font-size: 22px; font-weight: 700; color: #fff; border-top: 1px solid #ffffff1a; padding-top: 15px; }
+        body { font-family: 'Nunito', sans-serif; background: var(--bg); color: #f1f5f9; padding: 20px; }
+        header { text-align: center; margin-bottom: 20px; }
+        .logo { font-family: 'Baloo 2', cursive; font-size: 32px; color: var(--accent); }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 15px; background: var(--card); border: 2px solid #334155; border-radius: 12px; color: #fff; font-size: 18px; outline: none; }
+        .search-btn { background: var(--accent); border: none; width: 60px; border-radius: 12px; font-size: 20px; cursor: pointer; }
+        .result-card { background: var(--card); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #334155; }
+        .word-en { font-size: 38px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+        /* Khu vực hiển thị tiếng Việt thuần túy */
+        .viet-style { font-size: 30px; color: var(--text-vi); background: #000; padding: 20px; border-radius: 15px; border: 2px solid var(--text-vi); font-weight: 800; line-height: 1.6; text-transform: uppercase; word-break: break-word; }
+        .meaning { font-size: 22px; color: #94a3b8; margin-top: 15px; font-weight: 700; }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">TừĐiển Pro</div>
-        <p style="font-size: 12px; color: #8899bb">Hệ thống chuyển đổi IPA sang âm bồi Việt Nam</p>
+        <p style="color: #64748b">Phiên âm: "Sờ pô tờ", "Đi di thô lờ"</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Vd: Digital, Different..." autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Nhập từ (Vd: Sport, Digital...)" autocomplete="off">
         <button class="search-btn" onclick="doSearch()">🔍</button>
     </div>
 
     <div id="mainContent"></div>
 
 <script>
-// "TRÁI TIM" CỦA APP: BẢNG MAPPING IPA SANG TIẾNG VIỆT
-const ipaMap = {
-    // Nguyên âm đơn
-    'iː': 'i', 'ɪ': 'i', 'e': 'e', 'æ': 'e', 'ɑː': 'a', 'ɒ': 'o', 'ɔː': 'o', 'ʊ': 'u', 'uː': 'u', 'ʌ': 'ă', 'ɜː': 'ơ', 'ə': 'ơ',
-    // Nguyên âm đôi
+// BẢNG QUY ĐỔI IPA SANG CHỮ TIẾNG VIỆT THUẦN
+const mapping = {
+    'iː': 'i', 'ɪ': 'i', 'e': 'e', 'æ': 'e', 'ɑː': 'a', 'ɒ': 'o', 'ɔː': 'ô', 'ʊ': 'u', 'uː': 'u', 'ʌ': 'ă', 'ɜː': 'ơ', 'ə': 'ơ',
     'eɪ': 'êi', 'aɪ': 'ai', 'ɔɪ': 'oi', 'aʊ': 'ao', 'əʊ': 'âu', 'ɪə': 'ia', 'eə': 'e-ơ', 'ʊə': 'ua',
-    // Phụ âm đặc biệt
-    'p': 'p', 'b': 'b', 't': 't', 'd': 'd', 'k': 'c', 'g': 'g', 'f': 'ph', 'v': 'v', 'θ': 'th', 'ð': 'đ', 's': 'x', 'z': 'z',
-    'ʃ': 'sh', 'ʒ': 'd', 'h': 'h', 'm': 'm', 'n': 'n', 'ŋ': 'ng', 'l': 'l', 'r': 'r', 'j': 'i', 'w': 'u',
-    'tʃ': 'ch', 'dʒ': 'giờ'
+    'p': ' pờ', 'b': ' bờ', 't': ' tờ', 'd': ' dờ', 'k': ' cờ', 'g': ' gờ', 'f': ' phờ', 'v': ' vờ', 
+    'θ': ' thờ', 'ð': ' đờ', 's': ' sờ', 'z': ' zờ', 'ʃ': ' shờ', 'ʒ': ' dờ', 'h': ' hờ', 
+    'm': ' mờ', 'n': ' nờ', 'ŋ': ' ngờ', 'l': ' lờ', 'r': ' rờ', 'j': ' i', 'w': ' u',
+    'tʃ': ' chờ', 'dʒ': ' di' 
 };
 
-function processIPA(ipa) {
+function processToViet(word, ipa) {
     if (!ipa) return "";
-
-    // 1. Chuẩn hóa chuỗi IPA (Xóa dấu / và các ký tự phụ)
-    let raw = ipa.toLowerCase().replace(/[\/\.\(\)ˌ]/g, '').trim();
-
-    // 2. Xử lý trọng âm (ˈ) thành dấu SẮC (´)
-    // Tìm dấu ˈ, lấy âm tiếp theo và gán dấu sắc
-    raw = raw.replace(/ˈ([^aeiouăơêôiy]*)([aeiouæɑɒɔəʊʌiuv])/g, '$1$2́');
-    raw = raw.replace(/ˈ/g, '');
-
-    // 3. Tiến hành Mapping
-    // Sắp xếp các khóa của ipaMap theo độ dài giảm dần để ưu tiên âm phức (ch, giờ, ai...)
-    const sortedKeys = Object.keys(ipaMap).sort((a, b) => b.length - a.length);
     
-    let result = raw;
-    sortedKeys.forEach(key => {
-        const regex = new RegExp(key, 'g');
-        result = result.replace(regex, ipaMap[key]);
+    // 1. Chỉ giữ lại ký tự IPA, xóa hết các ký tự lạ gây chồng chữ
+    let cleanIpa = ipa.toLowerCase().replace(/[\/\.\(\)ˌ]/g, '').trim();
+
+    // 2. Xử lý trọng âm thành dấu sắc
+    cleanIpa = cleanIpa.replace(/ˈ([^aeiouăơêôiy]*)([aeiouæɑɒɔəʊʌiuv])/g, '$1$2́');
+    cleanIpa = cleanIpa.replace(/ˈ/g, '');
+
+    // 3. Quy đổi theo bảng mapping (ưu tiên âm dài trước)
+    let result = cleanIpa;
+    const keys = Object.keys(mapping).sort((a, b) => b.length - a.length);
+    
+    keys.forEach(key => {
+        result = result.split(key).join(mapping[key]);
     });
 
-    // 4. Hậu xử lý (Làm cho âm bồi dễ đọc hơn)
-    result = result
-        .replace(/t$/g, ' tờ').replace(/k$/g, ' cờ').replace(/p$/g, ' pờ').replace(/s$/g, ' xờ')
-        .replace(/l$/g, ' lờ').replace(/d$/g, ' dờ');
-
-    return result.toUpperCase();
+    // 4. Làm sạch khoảng trắng và định dạng
+    return result.replace(/\s+/g, ' ').trim().toUpperCase();
 }
 
 async function doSearch() {
     const word = document.getElementById('searchInput').value.trim();
     if (!word) return;
     const content = document.getElementById('mainContent');
-    content.innerHTML = '<div style="text-align:center;padding:20px;">Đang phân tích âm...</div>';
+    content.innerHTML = '<p style="text-align:center">Đang tra...</p>';
 
     try {
         const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
@@ -96,21 +87,13 @@ async function doSearch() {
         content.innerHTML = `
             <div class="result-card">
                 <div class="word-en">${word.toLowerCase()}</div>
-                <span class="ipa-label">IPA Gốc: ${ipa}</span>
-                <div class="viet-phonetic">${processIPA(ipa)}</div>
-                <div class="meaning-text">${transData[0][0][0]}</div>
+                <div class="viet-style">${processToViet(word, ipa)}</div>
+                <div class="meaning">${transData[0][0][0]}</div>
             </div>`;
-
-        // Phát âm
-        const msg = new SpeechSynthesisUtterance(word);
-        msg.lang = 'en-US';
-        window.speechSynthesis.speak(msg);
-
-    } catch (err) {
-        content.innerHTML = `<div style="padding:20px;text-align:center;">Lỗi kết nối server!</div>`;
+    } catch (e) {
+        content.innerHTML = '<p style="text-align:center">Không tìm thấy từ này!</p>';
     }
 }
-
 document.getElementById('searchInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') doSearch(); });
 </script>
 </body>
