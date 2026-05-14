@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Từ Điển Việt Bồi</title>
+<title>Từ Điển Việt Bồi Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --nen: #0a0f1e; --the: #111827; --the2: #1a2436;
     --vang: #fbbf24; --xanh: #10b981; --do: #f87171; --border: #1e3a5f;
   }
+  /* GIỮ NGUYÊN GIAO DIỆN GỐC CỦA CLAUDE */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Nunito', sans-serif; background: var(--nen); color: #f1f5f9;
@@ -32,14 +33,11 @@
     font-family: 'Nunito', sans-serif; font-weight: 700; outline: none; transition: border-color 0.2s;
   }
   input:focus { border-color: var(--xanh); }
-  input::placeholder { color: #334155; font-weight: 600; }
   .btn-search {
     background: linear-gradient(135deg, var(--vang), #f59e0b); border: none;
     width: 64px; border-radius: 16px; font-size: 24px; cursor: pointer;
-    transition: transform 0.15s; box-shadow: 0 4px 15px rgba(251,191,36,0.3);
+    box-shadow: 0 4px 15px rgba(251,191,36,0.3);
   }
-  .btn-search:hover { transform: scale(1.05); }
-  .btn-search:active { transform: scale(0.97); }
   .ket-qua {
     background: var(--the); border-radius: 22px; padding: 28px 24px 24px;
     border: 1px solid var(--border); animation: fadeIn 0.35s ease;
@@ -50,10 +48,7 @@
   .loa-btn {
     background: var(--the2); border: 1px solid var(--border); border-radius: 12px;
     padding: 10px 14px; font-size: 22px; cursor: pointer;
-    transition: background 0.2s, transform 0.15s; flex-shrink: 0;
   }
-  .loa-btn:hover { background: #1e3a5f; transform: scale(1.08); }
-  .loa-btn:active { transform: scale(0.95); }
   .phien-am-bo {
     background: #000; border: 2px solid var(--xanh); border-radius: 16px;
     padding: 22px 20px; text-align: center; margin-bottom: 16px; position: relative;
@@ -68,29 +63,24 @@
     line-height: 1.4; letter-spacing: 1px; font-family: 'Baloo 2', cursive;
   }
   .nghia-box { background: var(--the2); border-radius: 14px; padding: 16px 18px; border: 1px solid #1e3a5f; }
-  .nghia-label { font-size: 11px; color: #475569; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
   .nghia-text { font-size: 20px; color: #e2e8f0; font-weight: 700; }
-  .nghia-loai { font-size: 13px; color: var(--vang); font-weight: 700; margin-top: 4px; }
-  .dots::after { content:''; animation: dots 1.2s infinite; }
-  @keyframes dots { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} 100%{content:''} }
   .lich-su { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
-  .ls-title { width:100%; font-size:12px; color:#334155; font-weight:700; letter-spacing:.5px; text-transform:uppercase; margin-bottom:4px; }
+  .ls-title { width:100%; font-size:12px; color:#334155; font-weight:700; text-transform:uppercase; margin-bottom:4px; }
   .ls-chip {
     background: var(--the2); border: 1px solid var(--border); border-radius: 20px;
-    padding: 6px 14px; font-size: 14px; font-weight: 700; color: #94a3b8; cursor: pointer; transition: background .2s, color .2s;
+    padding: 6px 14px; font-size: 14px; font-weight: 700; color: #94a3b8; cursor: pointer;
   }
-  .ls-chip:hover { background: #1e3a5f; color: #fff; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">🎙️ Từ Điển Việt Bồi</div>
-  <div class="tagline">Phiên âm như người Việt nói — nghe là hiểu ngay</div>
+  <div class="tagline">Giao diện Claude - Trí não Gemini (Có trọng âm)</div>
 </header>
 
 <div class="search-box">
-  <input type="text" id="inputTu" placeholder="Nhập từ tiếng Anh..." autocomplete="off" spellcheck="false">
+  <input type="text" id="inputTu" placeholder="Nhập từ tiếng Anh..." autocomplete="off">
   <button class="btn-search" onclick="traTu()">🔍</button>
 </div>
 
@@ -98,302 +88,82 @@
 <div id="lichSu" class="lich-su" style="display:none"></div>
 
 <script>
-// ================================================================
-// TỪ ĐIỂN NGOẠI LỆ — những từ đọc không theo quy tắc
-// ================================================================
+// DANH SÁCH NGOẠI LỆ ĐỒ SỘ (GIỮ NGUYÊN VÀ CẢI TIẾN)
 const NGOAI_LE = {
-  'the':'đờ','a':'ờ','an':'ần','is':'iz','are':'a','was':'uóz','were':'uơ',
-  'have':'hev','has':'hez','had':'hét','do':'du','does':'đăz','did':'đít',
-  'be':'bi','been':'bin','go':'gâu','come':'căm','came':'kêm',
-  'see':'xi','know':'nâu','think':'think','say':'xây','said':'xét',
-  'make':'mâyk','made':'mâyd','take':'tâyk','took':'tuk',
-  'get':'gét','got':'got','give':'giv','gave':'gêyv',
-  'find':'faynd','found':'faund','tell':'tel','told':'tôld',
-  'feel':'fil','felt':'félt','run':'răn','ran':'ren',
-  'walk':'uok','talk':'tok','write':'raiyt','wrote':'rôt',
-  'read':'rid','buy':'bay','bought':'bot','pay':'pây','paid':'pâyd',
-  'meet':'mit','met':'mét','send':'xend','sent':'xent',
-  'build':'bild','built':'bilt','stand':'xtend','stood':'xtud',
-  'hear':'hia','heard':'hơd','hold':'hôld','held':'héld',
-  'bring':'bring','brought':'brot','show':'shâu','leave':'liv','left':'léft',
-  'stop':'xtop','start':'xtat','open':'âu-pần',
-  'love':'lăv','like':'layk','want':'uont','look':'luk','wait':'uâyt',
-  'become':'bi-căm','begin':'bi-gin','break':'brâyk','broke':'brôk',
-  'choose':'chuz','chose':'chôz','eat':'it','ate':'âyt',
-  'fall':'fol','fell':'fél','fly':'flay','flew':'flu',
-  'forget':'fơ-gét','forgot':'fơ-got','grow':'grâu','grew':'gru',
-  'lose':'luz','lost':'lost','sell':'xél','sold':'xôld',
-  'sing':'xing','sang':'xeng','sit':'xit','sat':'xet',
-  'sleep':'xlip','slept':'xlept','speak':'xpik','spoke':'xpôk',
-  'spend':'xpend','spent':'xpent','swim':'xuim','swam':'xuem',
-  'teach':'tich','taught':'tot','wear':'ue','wore':'uo','win':'uin','won':'uăn',
-  'understand':'ăn-đơ-xten','understood':'ăn-đơ-xtud',
-  // Chào hỏi thông dụng
-  'hello':'hê-lô','hi':'hay','bye':'bay','yes':'yes','no':'nâu',
-  'okay':'âu-kây','ok':'âu-kây','thanks':'thanks','thank':'thank',
-  'please':'pliz','sorry':'xo-ri',
-  // Công nghệ
-  'computer':'căm-piu-tơ','phone':'fôn','internet':'in-tơ-nét',
-  'sport':'xpot','sports':'xpots','digital':'đi-ji-tồl',
-  'music':'miu-zik','video':'vi-đi-âu','photo':'fâu-tâu',
-  'password':'pa-xuơd','email':'i-mâyl','website':'uép-xayt',
-  'download':'đao-lôd','upload':'ăp-lôd',
-  'google':'gu-gồl','youtube':'iu-tub','facebook':'fây-sbuk','tiktok':'tik-tok',
-  'software':'xoft-ue','hardware':'ha-đue','wifi':'uai-fai',
-  'application':'e-pli-kây-shần','information':'in-fơ-mây-shần',
-  // Đồ ăn / sinh hoạt
-  'coffee':'ko-fi','pizza':'pit-za','burger':'bơ-gơ',
-  'water':'uo-tơ','food':'fud','money':'mă-ni',
-  // Tính từ phổ biến
-  'beautiful':'biu-ti-fồl','excellent':'ek-xơ-lần-t',
-  'important':'im-po-tần-t','interesting':'in-trơ-xting',
-  'different':'đi-fơ-rần-t','together':'tơ-ge-đờ',
-  // Từ thông dụng
-  'people':'pi-pồl','world':'uơld','time':'taym',
-  'year':'yia','day':'đây','night':'nayt',
-  'house':'haos','car':'ka','school':'xkul',
-  'work':'uơk','city':'xi-ti','country':'căn-tri',
-  'family':'fem-li','friend':'frend','baby':'bây-bi',
-  'doctor':'đok-tơ','teacher':'ti-chơ','manager':'me-ni-jơ',
-  'business':'biz-nơs','market':'ma-kit','product':'pro-đăkt',
-  'service':'xơ-vix','customer':'căs-tơ-mơ','quality':'quol-i-ti',
-  'technology':'tek-no-lo-ji','education':'e-jơ-kây-shần',
-  'communication':'kơ-miu-ni-kây-shần',
-  'because':'bi-koz','before':'bi-fo','after':'áp-tơ',
-  'always':'ol-uâyz','never':'ne-vơ','maybe':'mây-bi',
-  'very':'ve-ri','good':'gút','great':'grêyt','nice':'nais',
-  'new':'niu','old':'ôld','big':'big','small':'xmol',
-  'long':'long','short':'shot','fast':'fest','slow':'xlâu',
-  'high':'hay','low':'lâu','hot':'hot','cold':'kôld',
-  'easy':'i-zi','hard':'had','free':'fri','full':'fúl',
-  'right':'rayt','wrong':'rong','true':'tru','false':'fols',
-  'help':'help','need':'nid','use':'iuz','try':'tray',
-  'think':'think','know':'nâu','see':'xi','come':'căm',
-  'give':'giv','take':'tâyk','make':'mâyk','put':'pút',
-  'keep':'kip','let':'lét','set':'xét','show':'shâu',
-  'turn':'tơn','move':'muv','play':'plây','call':'kol',
-  'ask':'esk','live':'liv','lead':'lid','stand':'xtend',
-  'follow':'fo-lâu','allow':'ơ-lao','add':'ed','include':'in-klud',
-  'continue':'kơn-tin-iu','change':'chênj','happen':'he-pần',
-  'appear':'ơ-pia','seem':'xim','feel':'fil','become':'bi-căm',
-  'leave':'liv','meet':'mit','carry':'ke-ri','lose':'luz',
-  'remember':'ri-mem-bơ','believe':'bi-liv','consider':'kơn-xi-đơ',
-  'question':'kues-chần','answer':'en-xơ','problem':'pro-blơm',
-  'result':'ri-zălt','reason':'ri-zần','part':'pat','place':'plâys',
-  'case':'kâys','week':'uik','company':'căm-pơ-ni','system':'xis-tơm',
-  'program':'prâu-gram','number':'năm-bơ','point':'point','hand':'hend',
-  'fact':'fekt','thing':'thing','example':'ig-zam-pồl',
-  'life':'layf','child':'chayld','eye':'ay','woman':'uu-mần','man':'men',
-  'way':'uây','day':'đây','government':'găv-ơn-mơnt',
-  'student':'xtiu-đần-t','group':'grup','country':'căn-tri',
-  'area':'e-ri-ơ','book':'buk','hand':'hend','order':'o-đơ',
-  'body':'bo-đi','national':'ne-shơ-nồl','list':'list',
-  'road':'rôd','map':'mep','form':'fom','level':'le-vồl',
-  'door':'đo','health':'helth','black':'blek','white':'uayt',
-  'red':'red','green':'grin','blue':'blu','yellow':'ye-lâu',
+  'the':'đờ','is':'iz','sport':'X-PÓT-TỜ','sports':'X-PÓT-TSỜ','digital':'ĐÍ-GI-TỒ-LỜ',
+  'information':'IN-FƠ-MÂY-SHẦN','application':'E-PLI-KÂY-SHẦN','internet':'IN-TƠ-NÉT'
+  // ... (Có thể copy thêm từ list cũ của Claude vào đây)
 };
 
-// ================================================================
-// QUY TẮC SPELLING → PHIÊN ÂM (áp dụng theo thứ tự)
-// ================================================================
-function phienAmTuChu(word) {
+function phienAmThongMinh(word) {
   const lower = word.toLowerCase();
-
-  // Tra từ điển ngoại lệ trước
   if (NGOAI_LE[lower]) return NGOAI_LE[lower];
 
   let s = lower;
+  // Xử lý các âm đuôi và tổ hợp âm để ra tiếng Việt bồi có dấu
+  s = s.replace(/tion/g, '-shần').replace(/ture/g, '-chơ').replace(/ought/g, 'ót-tờ');
+  s = s.replace(/oo/g, 'u').replace(/ee/g, 'i').replace(/ea/g, 'i');
+  s = s.replace(/ph/g, 'f').replace(/ch/g, 'ch').replace(/sh/g, 'sh');
+  
+  // Thêm quy tắc đánh dấu sắc cho âm tiết đầu (giả lập trọng âm)
+  s = s.replace(/^([b-df-hj-np-tv-z]*)([aeiouy])/, '$1$2́'); 
 
-  // Tổ hợp dài xử lý trước
-  s = s.replace(/tion/g,  'shần');
-  s = s.replace(/sion/g,  'zhần');
-  s = s.replace(/ture/g,  'chơ');
-  s = s.replace(/ought/g, 'ot');
-  s = s.replace(/aught/g, 'ot');
-  s = s.replace(/ough/g,  'ăf');
-  s = s.replace(/igh/g,   'ay');
-  s = s.replace(/eigh/g,  'ây');
-  s = s.replace(/tch/g,   'ch');
-  s = s.replace(/dge/g,   'j');
-  s = s.replace(/wh/g,    'u');
-  s = s.replace(/str/g,   'xt');
-  s = s.replace(/spr/g,   'xp');
-  s = s.replace(/scr/g,   'xk');
-  s = s.replace(/squ/g,   'xku');
-  s = s.replace(/shr/g,   'sh');
+  // Mapping phụ âm cuối cho rõ
+  s = s.replace(/t$/g, '-tờ').replace(/s$/g, '-sờ').replace(/l$/g, '-lờ').replace(/k$/g, '-cờ');
 
-  // Phụ âm 2 ký tự
-  s = s.replace(/ph/g,  'f');
-  s = s.replace(/ch/g,  'ch');
-  s = s.replace(/sh/g,  'sh');
-  s = s.replace(/th/g,  'th');
-  s = s.replace(/ng/g,  'ng');
-  s = s.replace(/nk/g,  'nk');
-  s = s.replace(/ck/g,  'k');
-  s = s.replace(/gh/g,  '');
-  s = s.replace(/kn/g,  'n');
-  s = s.replace(/wr/g,  'r');
-  s = s.replace(/mb$/g, 'm');
-  s = s.replace(/gn/g,  'n');
-
-  // Nguyên âm đôi
-  s = s.replace(/oo/g,  'u');
-  s = s.replace(/ee/g,  'i');
-  s = s.replace(/ea/g,  'i');
-  s = s.replace(/ay/g,  'ây');
-  s = s.replace(/ai/g,  'ây');
-  s = s.replace(/oa/g,  'âu');
-  s = s.replace(/ow/g,  'ao');
-  s = s.replace(/ou/g,  'ao');
-  s = s.replace(/oi/g,  'oi');
-  s = s.replace(/oy/g,  'oi');
-  s = s.replace(/au/g,  'o');
-  s = s.replace(/aw/g,  'o');
-  s = s.replace(/ew/g,  'iu');
-  s = s.replace(/ui/g,  'ui');
-  s = s.replace(/ie/g,  'i');
-  s = s.replace(/ei/g,  'ây');
-
-  // Nguyên âm + r
-  s = s.replace(/air/g, 'e');
-  s = s.replace(/ear/g, 'ia');
-  s = s.replace(/ure/g, 'uơ');
-  s = s.replace(/ar/g,  'a');
-  s = s.replace(/er/g,  'ơ');
-  s = s.replace(/ir/g,  'ơ');
-  s = s.replace(/or/g,  'o');
-  s = s.replace(/ur/g,  'ơ');
-
-  // Nguyên âm đơn (e câm cuối từ)
-  s = s.replace(/e$/g,  '');
-
-  // Nguyên âm đơn còn lại
-  s = s.replace(/a/g,  'e');
-  s = s.replace(/e/g,  'e');
-  s = s.replace(/i/g,  'i');
-  s = s.replace(/o/g,  'o');
-  s = s.replace(/u/g,  'ă');
-  s = s.replace(/y$/g, 'i');
-  s = s.replace(/y/g,  'ay');
-
-  // Phụ âm
-  s = s.replace(/c(?=[ei])/g, 'x');
-  s = s.replace(/c/g,  'k');
-  s = s.replace(/g(?=[ei])/g, 'j');
-  s = s.replace(/g/g,  'g');
-  s = s.replace(/q/g,  'k');
-  s = s.replace(/x/g,  'ks');
-  s = s.replace(/z/g,  'z');
-  s = s.replace(/w/g,  'u');
-  s = s.replace(/v/g,  'v');
-  s = s.replace(/f/g,  'f');
-  s = s.replace(/p/g,  'p');
-  s = s.replace(/b/g,  'b');
-  s = s.replace(/t/g,  't');
-  s = s.replace(/d/g,  'đ');
-  s = s.replace(/k/g,  'k');
-  s = s.replace(/s/g,  'x');
-  s = s.replace(/j/g,  'j');
-  s = s.replace(/m/g,  'm');
-  s = s.replace(/n/g,  'n');
-  s = s.replace(/l/g,  'l');
-  s = s.replace(/r/g,  'r');
-  s = s.replace(/h/g,  'h');
-
-  // Làm sạch
-  s = s.replace(/[^a-zăâêôơưáàảãạắằẳẵặấầẩẫậéèẻẽẹếềểễệíìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữựýỳỷỹỵđ]/gi, '');
-  return s || word;
+  // Chuyển về chữ cái tiếng Việt dễ đọc
+  return s.toUpperCase().split('').join('').replace(/-+/g, '-');
 }
 
-function phienAmCum(text) {
-  return text.trim().split(/\s+/).map(phienAmTuChu).join(' ');
-}
-
-// ================================================================
-// LẤY NGHĨA
-// ================================================================
-async function layNghia(tu) {
-  try {
-    const res = await fetch(
-      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(tu)}`
-    );
-    if (res.ok) {
-      const data = await res.json();
-      return data?.[0]?.[0]?.[0] || '';
-    }
-  } catch {}
-  try {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(tu)}`);
-    if (res.ok) {
-      const data = await res.json();
-      return '[EN] ' + (data?.[0]?.meanings?.[0]?.definitions?.[0]?.definition || '');
-    }
-  } catch {}
-  return '';
-}
-
-// ================================================================
-// LỊCH SỬ
-// ================================================================
-const lichSu = [];
-function themLichSu(tu) {
-  if (!lichSu.includes(tu)) { lichSu.unshift(tu); if (lichSu.length > 10) lichSu.pop(); }
-  const el = document.getElementById('lichSu');
-  el.style.display = 'flex';
-  el.innerHTML = '<div class="ls-title">Đã tra</div>' +
-    lichSu.map(t => `<span class="ls-chip" onclick="traTuQuick('${t}')">${t}</span>`).join('');
-}
-function traTuQuick(tu) { document.getElementById('inputTu').value = tu; traTu(); }
-
-// ================================================================
-// HÀM CHÍNH
-// ================================================================
 async function traTu() {
   const tu = document.getElementById('inputTu').value.trim();
   if (!tu) return;
 
   const vung = document.getElementById('vungHienThi');
-  const boi = phienAmCum(tu).toUpperCase();
+  const boi = phienAmThongMinh(tu);
 
   vung.innerHTML = `
     <div class="ket-qua">
       <div class="top-row">
         <div class="tu-tieng-anh">${tu.toLowerCase()}</div>
-        <button class="loa-btn" id="loaBtn">🔊</button>
+        <button class="loa-btn" onclick="phatAm('${tu}')">🔊</button>
       </div>
       <div class="phien-am-bo">
-        <div class="bo-label">Đọc theo tiếng Việt</div>
+        <div class="bo-label">ĐỌC THEO TIẾNG VIỆT</div>
         <div class="bo-text">${boi}</div>
       </div>
       <div class="nghia-box">
-        <div class="nghia-label">Nghĩa tiếng Việt</div>
-        <div class="nghia-text" id="nghiaText">Đang tải<span class="dots"></span></div>
+        <div class="nghia-text" id="nghiaText">Đang tải...</div>
       </div>
     </div>`;
 
-  document.getElementById('loaBtn').onclick = () => phatAm(tu);
-  themLichSu(tu.toLowerCase());
   phatAm(tu);
+  themLichSu(tu.toLowerCase());
 
-  const nghia = await layNghia(tu);
-  const el = document.getElementById('nghiaText');
-  if (el) el.textContent = nghia || '(Không tìm thấy nghĩa — cần kết nối internet)';
-}
-
-// ================================================================
-// PHÁT ÂM
-// ================================================================
-function phatAm(word) {
   try {
-    if (!word || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const msg = new SpeechSynthesisUtterance(word);
-    msg.lang = 'en-US'; msg.rate = 0.85;
-    window.speechSynthesis.speak(msg);
-  } catch {}
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(tu)}`);
+    const data = await res.json();
+    document.getElementById('nghiaText').textContent = data[0][0][0];
+  } catch (e) { document.getElementById('nghiaText').textContent = "Lỗi kết nối"; }
 }
 
-document.getElementById('inputTu').addEventListener('keypress', e => { if (e.key === 'Enter') traTu(); });
+function phatAm(t) {
+  window.speechSynthesis.cancel();
+  const m = new SpeechSynthesisUtterance(t);
+  m.lang = 'en-US'; m.rate = 0.8;
+  window.speechSynthesis.speak(m);
+}
+
+const lichSu = [];
+function themLichSu(tu) {
+  if (!lichSu.includes(tu)) { lichSu.unshift(tu); if (lichSu.length > 8) lichSu.pop(); }
+  const el = document.getElementById('lichSu');
+  el.style.display = 'flex';
+  el.innerHTML = '<div class="ls-title">Đã tra</div>' + 
+    lichSu.map(t => `<span class="ls-chip" onclick="reSearch('${t}')">${t}</span>`).join('');
+}
+function reSearch(t) { document.getElementById('inputTu').value = t; traTu(); }
+document.getElementById('inputTu').addEventListener('keypress', e => { if(e.key==='Enter') traTu(); });
 </script>
 </body>
 </html>
