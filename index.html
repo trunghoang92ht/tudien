@@ -3,83 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Từ Điển Phiên Âm Bồi AI</title>
+    <title>Từ Điển Bồi Pro - Chuẩn Tiếng Việt</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --text-vi: #10b981; }
+        :root { --nen: #0f172a; --the: #1e293b; --chu-vang: #fbbf24; --chu-bo: #10b981; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Nunito', sans-serif; background: var(--bg); color: #f1f5f9; padding: 20px; }
-        header { text-align: center; margin-bottom: 20px; }
-        .logo { font-family: 'Baloo 2', cursive; font-size: 32px; color: var(--accent); }
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 15px; background: var(--card); border: 2px solid #334155; border-radius: 12px; color: #fff; font-size: 18px; outline: none; }
-        .search-btn { background: var(--accent); border: none; width: 60px; border-radius: 12px; font-size: 20px; cursor: pointer; }
-        .result-card { background: var(--card); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #334155; }
-        .word-en { font-size: 38px; font-weight: 800; color: #fff; margin-bottom: 10px; }
-        .viet-style { font-size: 30px; color: var(--text-vi); background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--text-vi); font-weight: 800; line-height: 1.6; text-transform: uppercase; }
-        .meaning { font-size: 22px; color: #94a3b8; margin-top: 15px; font-weight: 700; }
+        body { font-family: 'Nunito', sans-serif; background: var(--nen); color: #f1f5f9; padding: 20px; }
+        header { text-align: center; margin-bottom: 25px; }
+        .logo { font-family: 'Baloo 2', cursive; font-size: 34px; color: var(--chu-vang); }
+        .search-box { display: flex; gap: 10px; margin-bottom: 25px; }
+        input { flex: 1; padding: 18px; background: var(--the); border: 2px solid #334155; border-radius: 15px; color: #fff; font-size: 18px; outline: none; }
+        .btn-search { background: var(--chu-vang); border: none; width: 65px; border-radius: 15px; font-size: 24px; cursor: pointer; }
+        .ket-qua { background: var(--the); border-radius: 20px; padding: 30px; text-align: center; border: 1px solid #334155; position: relative; }
+        .tu-tieng-anh { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 15px; }
+        /* Khu vực hiển thị tiếng Việt bồi: Sáng, to, không chồng chữ */
+        .phien-am-bo { font-size: 32px; color: var(--chu-bo); background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--chu-bo); font-weight: 800; line-height: 1.5; text-transform: uppercase; letter-spacing: 1px; }
+        .nghia-tieng-viet { font-size: 24px; color: #94a3b8; margin-top: 20px; font-weight: 700; }
+        .loa-btn { position: absolute; right: 20px; top: 20px; font-size: 25px; background: none; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">Từ Điển Pro AI</div>
-        <p style="color: #64748b">Hệ thống Việt hóa âm thanh thông minh</p>
+        <div class="logo">Từ Điển Việt Bồi</div>
+        <p style="color: #64748b">Phiên âm rõ như người Nhật - mượt như người Việt</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh..." autocomplete="off">
-        <button class="search-btn" onclick="doSearch()">🔍</button>
+        <input type="text" id="inputTu" placeholder="Nhập từ (Vd: Sport, Digital...)" autocomplete="off">
+        <button class="btn-search" onclick="traTu()">🔍</button>
     </div>
 
-    <div id="mainContent"></div>
+    <div id="vungHienThi"></div>
 
 <script>
-// BỘ QUY TẮC MAPPING THÔNG MINH (AI OPTIMIZED)
-const mapping = {
-    // Nguyên âm đôi & âm phức (Xử lý trước để tránh lỗi chia nhỏ)
+// MA TRẬN MAPPING: CẤU HÌNH ĐỂ ĐỌC GIỐNG NHẤT
+const boMa = {
+    // Nguyên âm đôi
     'eɪ': 'êi', 'aɪ': 'ai', 'ɔɪ': 'oi', 'aʊ': 'ao', 'əʊ': 'âu', 'ɪə': 'ia', 'eə': 'e-ơ', 'ʊə': 'ua',
-    'tʃ': ' chờ', 'dʒ': ' di', 'iː': 'i', 'ɔː': 'ô', 'ɑː': 'a', 'ɜː': 'ơ',
-    
-    // Phụ âm (Thêm âm "ờ" vào sau để tạo âm bồi tự nhiên)
-    'p': ' pờ', 'b': ' bờ', 't': ' tờ', 'd': ' dờ', 'k': ' cờ', 'g': ' gờ', 
-    'f': ' phờ', 'v': ' vờ', 's': ' sờ', 'z': ' zờ', 'ʃ': ' shờ', 'ʒ': ' dờ',
-    'θ': ' thờ', 'ð': ' đờ', 'm': ' mờ', 'n': ' nờ', 'ŋ': ' ngờ', 'l': ' lờ', 
-    'r': ' rờ', 'h': ' hờ', 'j': ' i', 'w': ' u',
-    
-    // Nguyên âm đơn còn lại
-    'ɪ': 'i', 'e': 'e', 'æ': 'e', 'ɒ': 'o', 'ʊ': 'u', 'uː': 'u', 'ʌ': 'ă', 'ə': 'ơ'
+    // Phụ âm đặc biệt (Dùng âm "ờ" để đọc bồi rõ)
+    'tʃ': ' chờ', 'dʒ': ' di', 'θ': ' thờ', 'ð': ' đờ', 'ʃ': ' shờ', 'ʒ': ' dờ', 'ŋ': ' ngờ',
+    // Nguyên âm đơn
+    'iː': 'i', 'ɪ': 'i', 'e': 'e', 'æ': 'e', 'ɑː': 'a', 'ɒ': 'o', 'ɔː': 'ô', 'ʊ': 'u', 'uː': 'u', 'ʌ': 'ă', 'ɜː': 'ơ', 'ə': 'ơ',
+    // Phụ âm đơn
+    'p': ' pờ', 'b': ' bờ', 't': ' tờ', 'd': ' dờ', 'k': ' cờ', 'g': ' gờ', 'f': ' phờ', 'v': ' vờ', 's': ' sờ', 'z': ' zờ',
+    'h': ' hờ', 'm': ' mờ', 'n': ' nờ', 'l': ' lờ', 'r': ' rờ', 'j': ' i', 'w': ' u'
 };
 
-function processToViet(ipa) {
+function taoAmBoi(ipa) {
     if (!ipa) return "";
     
-    // 1. Làm sạch & xử lý trọng âm thành dấu sắc
+    // 1. Dọn dẹp IPA gốc, loại bỏ ký tự lạ gây lỗi hiển thị
     let text = ipa.toLowerCase().replace(/[\/\.\(\)ˌ]/g, '').trim();
-    text = text.replace(/ˈ([^aeiouăơêôiy]*)([aeiouæɑɒɔəʊʌiuv])/g, 'ˈ$1$2́');
+
+    // 2. Xử lý trọng âm (ˈ) -> Thêm dấu sắc vào nguyên âm liền sau
+    text = text.replace(/ˈ([^aeiouăơêôiy]*)([aeiouæɑɒɔəʊʌiuv])/g, '$1$2́');
     text = text.replace(/ˈ/g, '');
 
-    // 2. Chạy Mapping theo thứ tự ưu tiên độ dài ký tự
-    const sortedKeys = Object.keys(mapping).sort((a, b) => b.length - a.length);
-    let result = text;
-    sortedKeys.forEach(key => {
-        const regex = new RegExp(key, 'g');
-        result = result.replace(regex, mapping[key]);
+    // 3. Mapping sang tiếng Việt (ưu tiên âm phức trước)
+    const danhSachAm = Object.keys(boMa).sort((a, b) => b.length - a.length);
+    let ketQua = text;
+    danhSachAm.forEach(am => {
+        const pattern = new RegExp(am, 'g');
+        ketQua = ketQua.replace(pattern, boMa[am]);
     });
 
-    // 3. Hậu xử lý: Gộp các chữ "ờ" bị lặp hoặc khoảng trắng dư thừa
-    return result.replace(/\s+/g, ' ').trim().toUpperCase();
+    // 4. Làm sạch & định dạng đẹp
+    return ketQua.replace(/\s+/g, ' ').trim().toUpperCase();
 }
 
-async function doSearch() {
-    const word = document.getElementById('searchInput').value.trim();
-    if (!word) return;
-    const content = document.getElementById('mainContent');
-    content.innerHTML = '<p style="text-align:center">Đang phân tích...</p>';
+async function traTu() {
+    const tu = document.getElementById('inputTu').value.trim();
+    if (!tu) return;
+    const vung = document.getElementById('vungHienThi');
+    vung.innerHTML = '<p style="text-align:center">Đang phân tích âm thanh...</p>';
 
     try {
-        const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${tu}`);
         const dictData = await dictRes.json();
-        const transRes = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(word)}`);
+        const transRes = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(tu)}`);
         const transData = await transRes.json();
 
         let ipa = "";
@@ -87,21 +88,28 @@ async function doSearch() {
             ipa = dictData[0].phonetic || (dictData[0].phonetics.find(p => p.text) || {}).text || "";
         }
 
-        // Nếu từ điển không có IPA, dùng bản word tạm thời
-        const vietPhonetic = processToViet(ipa || word);
-
-        content.innerHTML = `
-            <div class="result-card">
-                <div class="word-en">${word.toLowerCase()}</div>
-                <div class="viet-style">${vietPhonetic}</div>
-                <div class="meaning">${transData[0][0][0]}</div>
+        vung.innerHTML = `
+            <div class="ket-qua">
+                <button class="loa-btn" onclick="phatAm('${tu}')">🔊</button>
+                <div class="tu-tieng-anh">${tu.toLowerCase()}</div>
+                <div class="phien-am-bo">${taoAmBoi(ipa)}</div>
+                <div class="nghia-tieng-viet">${transData[0][0][0]}</div>
             </div>`;
-            
+        
+        phatAm(tu);
     } catch (e) {
-        content.innerHTML = '<p style="text-align:center">Lỗi dữ liệu, anh thử từ khác nhé!</p>';
+        vung.innerHTML = '<p style="text-align:center">Từ này lạ quá, anh kiểm tra lại nhé!</p>';
     }
 }
-document.getElementById('searchInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') doSearch(); });
+
+function phatAm(text) {
+    window.speechSynthesis.cancel();
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'en-US';
+    window.speechSynthesis.speak(msg);
+}
+
+document.getElementById('inputTu').addEventListener('keypress', (e) => { if (e.key === 'Enter') traTu(); });
 </script>
 </body>
 </html>
