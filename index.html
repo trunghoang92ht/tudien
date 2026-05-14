@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Từ Điển Việt Hóa Pro</title>
+<title>Từ Điển Việt Bồi Thuần Túy</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root { --nen: #0a0f1e; --the: #111827; --vang: #fbbf24; --xanh: #10b981; --border: #1e3a5f; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Nunito', sans-serif; background: var(--nen); color: #f1f5f9;
-    padding: 24px 20px; background-image: radial-gradient(ellipse at 20% 0%, rgba(16,185,129,0.08) 0%, transparent 60%);
+    padding: 24px 20px;
+    background-image: radial-gradient(ellipse at 20% 0%, rgba(16,185,129,0.08) 0%, transparent 60%);
   }
   header { text-align: center; margin-bottom: 25px; }
   .logo { font-family: 'Baloo 2', cursive; font-size: 38px; font-weight: 800; background: linear-gradient(135deg, #fbbf24, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -18,105 +19,111 @@
   input { flex: 1; padding: 18px; background: var(--the); border: 2px solid var(--border); border-radius: 16px; color: #fff; font-size: 18px; font-weight: 700; outline: none; }
   .btn-search { background: linear-gradient(135deg, var(--vang), #f59e0b); border: none; width: 64px; border-radius: 16px; font-size: 24px; cursor: pointer; }
   .ket-qua { background: var(--the); border-radius: 22px; padding: 25px; border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
-  .phien-am-bo { background: #000; border: 2px solid var(--xanh); border-radius: 16px; padding: 22px; text-align: center; position: relative; margin: 15px 0; }
+  .phien-am-bo { background: #000; border: 2px solid var(--xanh); border-radius: 16px; padding: 25px; text-align: center; position: relative; margin: 15px 0; }
   .bo-label { position: absolute; top: -12px; left: 20px; background: var(--xanh); color: #000; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 20px; }
-  .bo-text { font-size: 34px; font-weight: 800; color: var(--xanh); font-family: 'Baloo 2', cursive; letter-spacing: 1px; }
+  .bo-text { font-size: 36px; font-weight: 800; color: var(--xanh); font-family: 'Baloo 2', cursive; line-height: 1.2; letter-spacing: 1px; }
   .nghia-box { background: #1a2436; border-radius: 14px; padding: 15px; border: 1px solid #1e3a5f; }
   .nghia-text { font-size: 20px; color: #e2e8f0; font-weight: 700; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🎙️ VIỆT HÓA PHÁT ÂM</div>
-  <p style="color:#475569; font-size:12px">Phiên âm chuẩn xác theo phong cách Katakana Nhật Bản</p>
+  <div class="logo">🎙️ VIỆT BỒI CHUẨN</div>
+  <p style="color:#475569; font-size:12px">Việt hóa triệt để - Dễ đọc dễ nhớ</p>
 </header>
 
 <div class="search-box">
-  <input type="text" id="inputTu" placeholder="Nhập từ cần Việt hóa..." autocomplete="off">
+  <input type="text" id="inputTu" placeholder="Nhập từ cần phiên âm..." autocomplete="off">
   <button class="btn-search" onclick="traTu()">🔍</button>
 </div>
 
 <div id="vungHienThi"></div>
 
 <script>
-// BẢNG QUY ĐỔI ÂM THANH (PHONETIC TO VIETNAMESE)
-// Đây là "linh hồn" của app, giúp Việt hóa mọi từ dựa trên âm đọc
-const amMapping = {
-  'iː': 'I', 'ɪ': 'I', 'e': 'E', 'æ': 'E', 'ɑː': 'A', 'ɒ': 'O', 'ɔː': 'Ô', 'ʊ': 'U', 'uː': 'U', 'ʌ': 'Ă', 'ɜː': 'Ơ', 'ə': 'Ơ',
-  'eɪ': 'ÊI', 'aɪ': 'AI', 'ɔɪ': 'OI', 'aʊ': 'AO', 'əʊ': 'ÂU', 'ɪə': 'IA', 'eə': 'E-Ơ', 'ʊə': 'UA',
-  'p': ' PỜ', 'b': ' BỜ', 't': ' TỜ', 'd': ' DỜ', 'k': ' CỜ', 'g': ' GỜ', 'f': ' PHỜ', 'v': ' VỜ', 
-  'θ': ' THỜ', 'ð': ' ĐỜ', 's': ' SỜ', 'z': ' ZỜ', 'ʃ': ' SHỜ', 'ʒ': ' DỜ', 'h': ' HỜ', 
-  'm': ' MỜ', 'n': ' NỜ', 'ŋ': ' NGỜ', 'l': ' LỜ', 'r': ' RỜ', 'j': ' I', 'w': ' U',
-  'tʃ': ' CHỜ', 'dʒ': ' DI' 
-};
+// QUY TẮC VIỆT HÓA CHẶT CHẼ (LOẠI BỎ ÂM NGOẠI LAI)
+const VIET_RULES = [
+  { en: 'tion', vi: ' sần' },
+  { en: 'sion', vi: ' sần' },
+  { en: 'ture', vi: ' chơ' },
+  { en: 'sh', vi: ' sờ' },
+  { en: 'ch', vi: ' chờ' },
+  { en: 'th', vi: ' thờ' },
+  { en: 'ph', vi: ' phờ' },
+  { en: 'ght', vi: ' tờ' },
+  { en: 'ing', vi: ' inh' },
+  { en: 'ce', vi: ' xờ' },
+  { en: 'ge', vi: ' gi' }
+];
+
+function vietHoa(word) {
+  let s = word.toLowerCase().trim();
+  
+  // Ưu tiên các từ thông dụng để phiên âm "mượt" nhất
+  const uuTien = {
+    'application': 'E PLI KÊI SẦN',
+    'education': 'E ĐU KÊI SẦN',
+    'information': 'IN PHƠ MÊI SẦN',
+    'station': 'X TÊI SẦN',
+    'digital': 'ĐI GI TỒ LỜ',
+    'engineer': 'EN GI NIA',
+    'sport': 'X PÓT TỜ'
+  };
+
+  if (uuTien[s]) return uuTien[s];
+
+  // Áp dụng quy tắc thay thế
+  VIET_RULES.forEach(rule => {
+    s = s.split(rule.en).join(rule.vi);
+  });
+
+  // Chuyển đổi nguyên âm và phụ âm cuối sang âm Việt tương đương
+  s = s.replace(/a/g, ' e').replace(/i/g, ' i').replace(/o/g, ' ô').replace(/u/g, ' u');
+  s = s.replace(/t$/g, ' tờ').replace(/s$/g, ' sờ').replace(/l$/g, ' lờ').replace(/k$/g, ' cờ').replace(/d$/g, ' dờ').replace(/r$/g, ' rờ');
+
+  // Xử lý khoảng cách và trọng âm (thêm dấu sắc vào âm đầu cho có khí thế)
+  let words = s.trim().split(/\s+/);
+  if (words.length > 0) {
+    words[0] = words[0].replace(/[aeiouyôêăâi]/i, (m) => m + '́');
+  }
+
+  return words.join(' ').toUpperCase().replace(/\s+/g, ' ');
+}
 
 async function traTu() {
   const tu = document.getElementById('inputTu').value.trim();
   if (!tu) return;
 
+  const bồi = vietHoa(tu);
+
   try {
-    // 1. Lấy dữ liệu âm thanh (IPA) từ từ điển
-    const resDict = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${tu}`);
-    const dataDict = await resDict.json();
-    
-    // 2. Lấy nghĩa
-    const resTrans = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(tu)}`);
-    const dataTrans = await resTrans.json();
-
-    let ipa = "";
-    if (dataDict[0]) {
-      ipa = dataDict[0].phonetic || (dataDict[0].phonetics.find(p => p.text) || {}).text || "";
-    }
-
-    // 3. Quy trình "Việt hóa" âm thanh
-    const boi = vietHoaAmThanh(tu, ipa);
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(tu)}`);
+    const data = await res.json();
 
     document.getElementById('vungHienThi').innerHTML = `
       <div class="ket-qua">
-        <div style="font-size:30px; font-weight:800; margin-bottom:10px">${tu.toLowerCase()}</div>
+        <div style="font-size:24px; font-weight:800; color:#94a3b8; margin-bottom:5px">${tu.toLowerCase()}</div>
         <div class="phien-am-bo">
-          <div class="bo-label">CÁCH ĐỌC TIẾNG VIỆT</div>
-          <div class="bo-text">${boi}</div>
+          <div class="bo-label">PHIÊN ÂM TIẾNG VIỆT</div>
+          <div class="bo-text">${bồi}</div>
         </div>
         <div class="nghia-box">
-          <div class="nghia-text">${dataTrans[0][0][0]}</div>
+          <div class="nghia-text">${data[0][0][0]}</div>
         </div>
       </div>`;
     
-    phatAm(tu);
+    // Phát âm để anh nghe kèm
+    window.speechSynthesis.cancel();
+    const m = new SpeechSynthesisUtterance(tu);
+    m.lang = 'en-US'; m.rate = 0.8;
+    window.speechSynthesis.speak(m);
   } catch (e) {
-    document.getElementById('vungHienThi').innerHTML = "Không tìm thấy từ hoặc lỗi mạng.";
+    document.getElementById('vungHienThi').innerHTML = "Lỗi kết nối!";
   }
 }
 
-function vietHoaAmThanh(word, ipa) {
-  // Nếu không có IPA, dùng bộ lọc ký tự cơ bản (giống người Nhật đoán âm)
-  if (!ipa) {
-    return word.toUpperCase().split('').join('-').replace(/-+/g, '-');
-  }
-
-  // Làm sạch IPA và xử lý trọng âm thành dấu SẮC
-  let text = ipa.toLowerCase().replace(/[\/\.\(\)ˌ]/g, '').trim();
-  text = text.replace(/ˈ([^aeiouăơêôiy]*)([aeiouæɑɒɔəʊʌiuv])/g, '$1$2́');
-  text = text.replace(/ˈ/g, '');
-
-  // Duyệt bảng Mapping để thay thế âm thanh
-  const keys = Object.keys(amMapping).sort((a, b) => b.length - a.length);
-  let ketQua = text;
-  keys.forEach(key => {
-    ketQua = ketQua.split(key).join(amMapping[key]);
-  });
-
-  return ketQua.replace(/\s+/g, ' ').trim().toUpperCase();
-}
-
-function phatAm(t) {
-  window.speechSynthesis.cancel();
-  const m = new SpeechSynthesisUtterance(t);
-  m.lang = 'en-US'; m.rate = 0.8;
-  window.speechSynthesis.speak(m);
-}
+document.getElementById('inputTu').addEventListener('keypress', e => { if(e.key==='Enter') traTu(); });
 </script>
 </body>
 </html>
