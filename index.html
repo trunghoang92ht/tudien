@@ -3,22 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Việt Hóa 100% - Chuẩn Nhịp Điệu</title>
+<title>Việt Hóa 100% - Chuẩn Ghép Vần</title>
 <style>
   :root { --nen: #0f172a; --the: #1e293b; --xanh: #2dd4bf; --vang: #fbbf24; }
   body { font-family: sans-serif; background: var(--nen); color: white; padding: 20px; text-align: center; }
   .box { background: var(--the); padding: 30px; border-radius: 20px; max-width: 400px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-  input { width: 90%; padding: 15px; border-radius: 12px; border: none; font-size: 20px; margin-bottom: 20px; text-align: center; font-weight: bold; }
-  button { background: var(--vang); border: none; padding: 15px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; }
-  #ketQua { margin-top: 30px; font-size: 36px; font-weight: 800; color: var(--xanh); text-transform: uppercase; }
+  input { width: 90%; padding: 15px; border-radius: 12px; border: none; font-size: 20px; margin-bottom: 20px; text-align: center; font-weight: bold; outline: none; }
+  button { background: var(--vang); border: none; padding: 15px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
+  button:active { transform: scale(0.98); }
+  #ketQua { margin-top: 30px; font-size: 38px; font-weight: 800; color: var(--xanh); text-transform: uppercase; letter-spacing: 1px; }
   #nghia { margin-top: 10px; font-size: 18px; color: #94a3b8; font-style: italic; }
 </style>
 </head>
 <body>
 
 <div class="box">
-  <h2 style="color: var(--vang); margin-bottom: 20px;">VIỆT HÓA 100%</h2>
-  <input type="text" id="tuInput" placeholder="Nhập từ..." onkeypress="if(event.key==='Enter') xửLý()">
+  <h2 style="color: var(--vang); margin-bottom: 20px;">VIỆT HÓA CHUẨN</h2>
+  <input type="text" id="tuInput" placeholder="Nhập từ cần tra..." onkeypress="if(event.key==='Enter') xửLý()">
   <button onclick="xửLý()">CHUYỂN SANG TIẾNG VIỆT</button>
   
   <div id="ketQua"></div>
@@ -26,19 +27,9 @@
 </div>
 
 <script>
-// BẢNG QUY ĐỔI ÂM THÀNH VẦN TIẾNG VIỆT
-const IPA_MAP = {
-  'eɪ': 'ÂY', 'aɪ': 'AI', 'ɔɪ': 'OI', 'aʊ': 'AO', 'əʊ': 'ÂU', 
-  'ɪə': 'IA', 'eə': 'E Ơ', 'ʊə': 'UA', 'iː': 'I', 'ɪ': 'I',
-  'æ': 'E', 'e': 'E', 'ɑː': 'A', 'ɒ': 'O', 'ɔː': 'Ô',
-  'ʊ': 'U', 'uː': 'U', 'ʌ': 'Ă', 'ɜː': 'Ơ', 'ə': 'Ơ'
-};
-
-const CONSONANT_MAP = {
-  'p': 'PỜ', 'b': 'BỜ', 't': 'TỜ', 'd': 'DỜ', 'k': 'CỜ', 'g': 'GỜ',
-  'f': 'PHỜ', 'v': 'VỜ', 's': 'SỜ', 'z': 'ZỜ', 'h': 'HỜ', 'm': 'MỜ',
-  'n': 'NỜ', 'l': 'LỜ', 'r': 'RỜ', 'ʃ': 'SẦN', 'tʃ': 'CHỜ', 'dʒ': 'GI'
-};
+// BẢNG MÃ HÓA ÂM THANH
+const NGUYEN_AM = { 'æ':'E', 'e':'E', 'ɪ':'I', 'iː':'I', 'ɒ':'O', 'ɔː':'Ô', 'ʊ':'U', 'uː':'U', 'ʌ':'Ă', 'ə':'Ơ', 'ɜː':'Ơ', 'ɑː':'A', 'eɪ':'ÂY', 'aɪ':'AI', 'ɔɪ':'OI', 'aʊ':'AO', 'əʊ':'ÂU' };
+const PHU_AM = { 'p':'P', 'b':'B', 't':'T', 'd':'D', 'k':'C', 'g':'G', 'f':'PH', 'v':'V', 's':'S', 'z':'Z', 'm':'M', 'n':'N', 'l':'L', 'r':'R', 'h':'H', 'ʃ':'S', 'tʃ':'CH', 'dʒ':'GI', 'θ':'TH', 'ð':'Đ' };
 
 async function xửLý() {
   const tu = document.getElementById('tuInput').value.trim().toLowerCase();
@@ -51,67 +42,59 @@ async function xửLý() {
     const dataTrans = await resTrans.json();
 
     let ipa = dataDict[0]?.phonetic || dataDict[0]?.phonetics.find(p => p.text)?.text || "";
-    
-    if (ipa) {
-      document.getElementById('ketQua').innerText = convertSmart(ipa);
-    } else {
-      document.getElementById('ketQua').innerText = "CHƯA CÓ DỮ LIỆU";
-    }
+    document.getElementById('ketQua').innerText = ipa ? ghepVanSmart(ipa) : "CHƯA CÓ DỮ LIỆU";
     document.getElementById('nghia').innerText = dataTrans[0][0][0];
 
-    // Phát âm mẫu
     const msg = new SpeechSynthesisUtterance(tu);
-    msg.lang = 'en-US';
-    window.speechSynthesis.speak(msg);
-
-  } catch (err) {
-    document.getElementById('ketQua').innerText = "LỖI KẾT NỐI";
-  }
+    msg.lang = 'en-US'; window.speechSynthesis.speak(msg);
+  } catch (err) { document.getElementById('ketQua').innerText = "LỖI KẾT NỐI"; }
 }
 
-function convertSmart(ipa) {
+function ghepVanSmart(ipa) {
   let text = ipa.replace(/[\/\b\[\]]/g, '').trim();
-  
-  // 1. Xử lý trọng âm thành dấu SẮC
+  // Đánh dấu trọng âm bằng dấu sắc
   text = text.replace(/ˈ([^aeiouæɑɒɔəʊʌiuv]*)([aeiouæɑɒɔəʊʌiuv])/g, '$1$2́');
 
-  // 2. Quy tắc ghép vần (Nếu phụ âm đi trước nguyên âm thì ghép lại, nếu đứng cuối mới thêm "Ờ")
-  // Đây là phần sửa lỗi "BỜ U CỜ" của anh
-  let result = "";
+  let output = "";
   let i = 0;
-  const ipaChars = Object.keys(IPA_MAP).sort((a,b) => b.length - a.length);
-  const consChars = Object.keys(CONSONANT_MAP).sort((a,b) => b.length - a.length);
-
-  // Thuật toán quét từng ký tự IPA để ghép vần tự nhiên
-  let tempIpa = text;
   
-  // Thay thế các nguyên âm trước
-  ipaChars.forEach(key => {
-    tempIpa = tempIpa.split(key).join(" " + IPA_MAP[key] + " ");
-  });
+  // Thuật toán quét và ghép vần
+  while (i < text.length) {
+    let found = false;
+    // Thử tìm nguyên âm đôi trước
+    for (let len = 2; len >= 1; len--) {
+      let chunk = text.substr(i, len);
+      if (NGUYEN_AM[chunk.replace('́','')]) {
+        let coDau = chunk.includes('́') ? "́" : "";
+        output += NGUYEN_AM[chunk.replace('́','')] + coDau + " ";
+        i += len;
+        found = true; break;
+      }
+    }
+    if (found) continue;
 
-  // Xử lý các phụ âm đứng lẻ loi (thêm "Ờ")
-  let words = tempIpa.split(/\s+/);
-  let finalWords = words.map(w => {
-    if (IPA_MAP[w]) return w; // Giữ nguyên nguyên âm đã chuyển
-    
-    let sub = w;
-    consChars.forEach(c => {
-      sub = sub.split(c).join(" " + CONSONANT_MAP[c] + " ");
-    });
-    return sub;
-  });
+    // Thử tìm phụ âm
+    for (let len = 2; len >= 1; len--) {
+      let chunk = text.substr(i, len);
+      if (PHU_AM[chunk]) {
+        // Kiểm tra xem phụ âm này có đứng trước nguyên âm không để ghép
+        let nextChar = text.substr(i + len, 1);
+        if (nextChar && (NGUYEN_AM[nextChar] || nextChar === '́' || ['a','e','i','o','u','æ','ɔ','ə','ʊ','ʌ'].includes(nextChar))) {
+            output += PHU_AM[chunk]; // Ghép dính
+        } else {
+            output += PHU_AM[chunk] + "Ờ "; // Bật âm cuối
+        }
+        i += len;
+        found = true; break;
+      }
+    }
+    if (!found) i++;
+  }
 
-  let final = finalWords.join(" ").trim().toUpperCase().replace(/\s+/g, ' ');
-  
-  // Xử lý dấu sắc cho các nguyên âm
-  final = final.replace(/Ớ/g, 'Ớ').replace(/Ế/g, 'Ế').replace(/Á/g, 'Á')
-               .replace(/É/g, 'É').replace(/Í/g, 'Í').replace(/Ố/g, 'Ố')
-               .replace(/Ú/g, 'Ú').replace(/Ắ/g, 'Ắ');
-
-  // Quy tắc đặc biệt: Nếu âm "Ờ" đi ngay sau một nguyên âm thì giữ lại (như BÚ CỜ), 
-  // nhưng nếu phụ âm đi trước nguyên âm thì phải ghép (như PỜ LI -> PLI)
-  return final.replace(/BỜ U/g, 'BÚ').replace(/PỜ L/g, 'PL').replace(/CỜ Ê/g, 'CÊ');
+  // Làm sạch dấu tiếng Việt
+  return output.trim().toUpperCase()
+    .replace(/É/g, 'É').replace(/Á/g, 'Á').replace(/Í/g, 'Í').replace(/Ú/g, 'Ú').replace(/Ố/g, 'Ố').replace(/Ớ/g, 'Ớ')
+    .replace(/\s+/g, ' ');
 }
 </script>
 </body>
