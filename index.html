@@ -1,115 +1,415 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Từ Điển Bồi Pro - Chuẩn Tiếng Việt</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --nen: #0f172a; --the: #1e293b; --chu-vang: #fbbf24; --chu-bo: #10b981; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Nunito', sans-serif; background: var(--nen); color: #f1f5f9; padding: 20px; }
-        header { text-align: center; margin-bottom: 25px; }
-        .logo { font-family: 'Baloo 2', cursive; font-size: 34px; color: var(--chu-vang); }
-        .search-box { display: flex; gap: 10px; margin-bottom: 25px; }
-        input { flex: 1; padding: 18px; background: var(--the); border: 2px solid #334155; border-radius: 15px; color: #fff; font-size: 18px; outline: none; }
-        .btn-search { background: var(--chu-vang); border: none; width: 65px; border-radius: 15px; font-size: 24px; cursor: pointer; }
-        .ket-qua { background: var(--the); border-radius: 20px; padding: 30px; text-align: center; border: 1px solid #334155; position: relative; }
-        .tu-tieng-anh { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 15px; }
-        /* Khu vực hiển thị tiếng Việt bồi: Sáng, to, không chồng chữ */
-        .phien-am-bo { font-size: 32px; color: var(--chu-bo); background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--chu-bo); font-weight: 800; line-height: 1.5; text-transform: uppercase; letter-spacing: 1px; }
-        .nghia-tieng-viet { font-size: 24px; color: #94a3b8; margin-top: 20px; font-weight: 700; }
-        .loa-btn { position: absolute; right: 20px; top: 20px; font-size: 25px; background: none; border: none; cursor: pointer; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Từ Điển Việt Bồi</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nen: #0a0f1e;
+    --the: #111827;
+    --the2: #1a2436;
+    --vang: #fbbf24;
+    --xanh: #10b981;
+    --do: #f87171;
+    --border: #1e3a5f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--nen);
+    color: #f1f5f9;
+    min-height: 100vh;
+    padding: 24px 20px 40px;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(16,185,129,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(251,191,36,0.07) 0%, transparent 60%);
+  }
+
+  header { text-align: center; margin-bottom: 28px; }
+
+  .logo {
+    font-family: 'Baloo 2', cursive;
+    font-size: 38px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fbbf24, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+  .tagline { color: #475569; font-size: 14px; margin-top: 4px; font-weight: 600; }
+
+  .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+
+  input {
+    flex: 1; padding: 18px 20px;
+    background: var(--the); border: 2px solid var(--border);
+    border-radius: 16px; color: #fff; font-size: 18px;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    outline: none; transition: border-color 0.2s;
+  }
+  input:focus { border-color: var(--xanh); }
+  input::placeholder { color: #334155; font-weight: 600; }
+
+  .btn-search {
+    background: linear-gradient(135deg, var(--vang), #f59e0b);
+    border: none; width: 64px; border-radius: 16px;
+    font-size: 24px; cursor: pointer;
+    transition: transform 0.15s;
+    box-shadow: 0 4px 15px rgba(251,191,36,0.3);
+  }
+  .btn-search:hover { transform: scale(1.05); }
+  .btn-search:active { transform: scale(0.97); }
+
+  .ket-qua {
+    background: var(--the); border-radius: 22px;
+    padding: 28px 24px 24px; border: 1px solid var(--border);
+    position: relative; animation: fadeIn 0.35s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .top-row {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; margin-bottom: 10px;
+  }
+  .tu-tieng-anh {
+    font-size: 36px; font-weight: 800; color: #fff;
+    font-family: 'Baloo 2', cursive; line-height: 1.1;
+  }
+  .ipa-row { font-size: 16px; color: #475569; margin-bottom: 18px; font-weight: 600; }
+
+  .loa-btn {
+    background: var(--the2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 14px; font-size: 22px;
+    cursor: pointer; transition: background 0.2s, transform 0.15s; flex-shrink: 0;
+  }
+  .loa-btn:hover { background: #1e3a5f; transform: scale(1.08); }
+  .loa-btn:active { transform: scale(0.95); }
+
+  .phien-am-bo {
+    background: #000; border: 2px solid var(--xanh);
+    border-radius: 16px; padding: 22px 20px;
+    text-align: center; margin-bottom: 16px; position: relative;
+  }
+  .bo-label {
+    position: absolute; top: -12px; left: 20px;
+    background: var(--xanh); color: #000;
+    font-size: 11px; font-weight: 800;
+    padding: 2px 10px; border-radius: 20px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .bo-text {
+    font-size: 34px; font-weight: 800; color: var(--xanh);
+    line-height: 1.4; letter-spacing: 1px;
+    font-family: 'Baloo 2', cursive;
+  }
+
+  .nghia-box {
+    background: var(--the2); border-radius: 14px;
+    padding: 16px 18px; border: 1px solid #1e3a5f;
+  }
+  .nghia-label {
+    font-size: 11px; color: #475569; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .nghia-text { font-size: 20px; color: #e2e8f0; font-weight: 700; }
+  .nghia-loai { font-size: 13px; color: var(--vang); font-weight: 700; margin-top: 4px; }
+
+  .loading {
+    text-align: center; padding: 40px;
+    color: #475569; font-weight: 700; font-size: 16px;
+  }
+  .dots::after {
+    content: ''; animation: dots 1.2s infinite;
+  }
+  @keyframes dots {
+    0%  { content: '.'; } 33% { content: '..'; }
+    66% { content: '...'; } 100% { content: ''; }
+  }
+
+  .loi {
+    text-align: center; padding: 36px;
+    background: var(--the); border-radius: 20px;
+    border: 1px solid #3b1c1c; color: var(--do); font-weight: 700; font-size: 16px;
+  }
+
+  .lich-su { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .ls-title {
+    width: 100%; font-size: 12px; color: #334155;
+    font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .ls-chip {
+    background: var(--the2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 14px; font-size: 14px;
+    font-weight: 700; color: #94a3b8; cursor: pointer; transition: background 0.2s, color 0.2s;
+  }
+  .ls-chip:hover { background: #1e3a5f; color: #fff; }
+</style>
 </head>
 <body>
-    <header>
-        <div class="logo">Từ Điển Việt Bồi</div>
-        <p style="color: #64748b">Phiên âm rõ như người Nhật - mượt như người Việt</p>
-    </header>
 
-    <div class="search-box">
-        <input type="text" id="inputTu" placeholder="Nhập từ (Vd: Sport, Digital...)" autocomplete="off">
-        <button class="btn-search" onclick="traTu()">🔍</button>
-    </div>
+<header>
+  <div class="logo">🎙️ Từ Điển Việt Bồi</div>
+  <div class="tagline">Phiên âm như người Việt nói — nghe là hiểu ngay</div>
+</header>
 
-    <div id="vungHienThi"></div>
+<div class="search-box">
+  <input type="text" id="inputTu" placeholder="Nhập từ tiếng Anh..." autocomplete="off" spellcheck="false">
+  <button class="btn-search" onclick="traTu()">🔍</button>
+</div>
+
+<div id="vungHienThi"></div>
+<div id="lichSu" class="lich-su" style="display:none"></div>
 
 <script>
-// MA TRẬN MAPPING: CẤU HÌNH ĐỂ ĐỌC GIỐNG NHẤT
-const boMa = {
-    // Nguyên âm đôi
-    'eɪ': 'êi', 'aɪ': 'ai', 'ɔɪ': 'oi', 'aʊ': 'ao', 'əʊ': 'âu', 'ɪə': 'ia', 'eə': 'e-ơ', 'ʊə': 'ua',
-    // Phụ âm đặc biệt (Dùng âm "ờ" để đọc bồi rõ)
-    'tʃ': ' chờ', 'dʒ': ' di', 'θ': ' thờ', 'ð': ' đờ', 'ʃ': ' shờ', 'ʒ': ' dờ', 'ŋ': ' ngờ',
-    // Nguyên âm đơn
-    'iː': 'i', 'ɪ': 'i', 'e': 'e', 'æ': 'e', 'ɑː': 'a', 'ɒ': 'o', 'ɔː': 'ô', 'ʊ': 'u', 'uː': 'u', 'ʌ': 'ă', 'ɜː': 'ơ', 'ə': 'ơ',
-    // Phụ âm đơn
-    'p': ' pờ', 'b': ' bờ', 't': ' tờ', 'd': ' dờ', 'k': ' cờ', 'g': ' gờ', 'f': ' phờ', 'v': ' vờ', 's': ' sờ', 'z': ' zờ',
-    'h': ' hờ', 'm': ' mờ', 'n': ' nờ', 'l': ' lờ', 'r': ' rờ', 'j': ' i', 'w': ' u'
-};
+// ============================================================
+// BẢNG PHIÊN ÂM IPA → TIẾNG VIỆT BỒI
+// Thứ tự quan trọng: âm phức (nhiều ký tự) phải đứng TRƯỚC âm đơn
+// ============================================================
+const IPA_TABLE = [
+  // === ÂM ĐÔI (diphthongs) ===
+  ['eɪ', 'ây'],   // face, late
+  ['aɪ', 'ai'],   // my, time
+  ['ɔɪ', 'oi'],   // boy, coin
+  ['aʊ', 'ao'],   // now, out
+  ['əʊ', 'âu'],   // go, home (British)
+  ['oʊ', 'âu'],   // go, home (American)
+  ['ɪə', 'ia'],   // near, here
+  ['eə', 'e-ơ'],  // there, care
+  ['ʊə', 'ua'],   // tour, pure
 
-function taoAmBoi(ipa) {
-    if (!ipa) return "";
-    
-    // 1. Dọn dẹp IPA gốc, loại bỏ ký tự lạ gây lỗi hiển thị
-    let text = ipa.toLowerCase().replace(/[\/\.\(\)ˌ]/g, '').trim();
+  // === PHỤ ÂM ĐÔI ===
+  ['tʃ', 'ch'],   // church, watch
+  ['dʒ', 'j'],    // judge, age
+  ['θ',  'th'],   // think, three
+  ['ð',  'đ'],    // this, that
+  ['ʃ',  'sh'],   // she, push
+  ['ʒ',  'zh'],   // vision, measure
+  ['ŋ',  'ng'],   // sing, long
 
-    // 2. Xử lý trọng âm (ˈ) -> Thêm dấu sắc vào nguyên âm liền sau
-    text = text.replace(/ˈ([^aeiouăơêôiy]*)([aeiouæɑɒɔəʊʌiuv])/g, '$1$2́');
-    text = text.replace(/ˈ/g, '');
+  // === NGUYÊN ÂM DÀI ===
+  ['iː', 'i'],    // see, team
+  ['ɑː', 'a'],    // car, father
+  ['ɔː', 'o'],    // law, more
+  ['uː', 'u'],    // too, blue
+  ['ɜː', 'ơ'],    // her, bird
 
-    // 3. Mapping sang tiếng Việt (ưu tiên âm phức trước)
-    const danhSachAm = Object.keys(boMa).sort((a, b) => b.length - a.length);
-    let ketQua = text;
-    danhSachAm.forEach(am => {
-        const pattern = new RegExp(am, 'g');
-        ketQua = ketQua.replace(pattern, boMa[am]);
-    });
+  // === NGUYÊN ÂM NGẮN ===
+  ['ɪ',  'i'],    // sit, big
+  ['e',  'e'],    // bed, ten
+  ['æ',  'e'],    // cat, bad
+  ['ɒ',  'o'],    // hot, stop (British)
+  ['ʊ',  'u'],    // book, put
+  ['ʌ',  'ă'],    // cup, love
+  ['ə',  'ơ'],    // about, again (schwa)
 
-    // 4. Làm sạch & định dạng đẹp
-    return ketQua.replace(/\s+/g, ' ').trim().toUpperCase();
-}
+  // === PHỤ ÂM ĐƠN ===
+  ['p',  'p'],
+  ['b',  'b'],
+  ['t',  't'],
+  ['d',  'd'],
+  ['k',  'k'],
+  ['g',  'g'],
+  ['f',  'f'],
+  ['v',  'v'],
+  ['s',  's'],
+  ['z',  'z'],
+  ['h',  'h'],
+  ['m',  'm'],
+  ['n',  'n'],
+  ['l',  'l'],
+  ['r',  'r'],
+  ['j',  'y'],
+  ['w',  'u'],
+];
 
-async function traTu() {
-    const tu = document.getElementById('inputTu').value.trim();
-    if (!tu) return;
-    const vung = document.getElementById('vungHienThi');
-    vung.innerHTML = '<p style="text-align:center">Đang phân tích âm thanh...</p>';
+// ============================================================
+// HÀM PHIÊN ÂM CHÍNH
+// ============================================================
+function ipaToVietBoi(ipa) {
+  if (!ipa) return null;
 
-    try {
-        const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${tu}`);
-        const dictData = await dictRes.json();
-        const transRes = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURI(tu)}`);
-        const transData = await transRes.json();
+  // 1. Làm sạch: bỏ /.../, [...], khoảng trắng thừa
+  let s = ipa.replace(/[\/\[\]\s]/g, '').trim();
 
-        let ipa = "";
-        if(dictData[0]) {
-            ipa = dictData[0].phonetic || (dictData[0].phonetics.find(p => p.text) || {}).text || "";
-        }
+  // 2. Tách âm tiết theo dấu chấm (.) và ký hiệu trọng âm (ˈˌ)
+  //    Giữ lại thông tin âm tiết nào có trọng âm chính (ˈ)
+  const parts = s.split(/([.ˈˌ])/);
+  let syllables = [];
+  let stress = false;
+  let buf = '';
 
-        vung.innerHTML = `
-            <div class="ket-qua">
-                <button class="loa-btn" onclick="phatAm('${tu}')">🔊</button>
-                <div class="tu-tieng-anh">${tu.toLowerCase()}</div>
-                <div class="phien-am-bo">${taoAmBoi(ipa)}</div>
-                <div class="nghia-tieng-viet">${transData[0][0][0]}</div>
-            </div>`;
-        
-        phatAm(tu);
-    } catch (e) {
-        vung.innerHTML = '<p style="text-align:center">Từ này lạ quá, anh kiểm tra lại nhé!</p>';
+  for (const p of parts) {
+    if (p === 'ˈ') { stress = true; }
+    else if (p === 'ˌ' || p === '.') {
+      if (buf) { syllables.push({ text: buf, stress }); buf = ''; stress = false; }
+    } else {
+      buf += p;
     }
+  }
+  if (buf) syllables.push({ text: buf, stress });
+
+  // Nếu không tách được syllable, xử lý cả chuỗi như 1 âm tiết
+  if (syllables.length === 0) syllables = [{ text: s, stress: false }];
+
+  // 3. Map từng âm tiết
+  const mapped = syllables.map(({ text, stress }) => {
+    let out = text;
+    for (const [from, to] of IPA_TABLE) {
+      // Dùng split+join để tránh regex conflict với ký tự đặc biệt IPA
+      out = out.split(from).join(to);
+    }
+    // Bỏ ký tự IPA còn sót lại chưa map được
+    out = out.replace(/[ˈˌ]/g, '');
+    return out;
+  });
+
+  // 4. Ghép lại bằng dấu gạch ngang
+  return mapped.filter(Boolean).join('-');
 }
 
-function phatAm(text) {
+// ============================================================
+// LỊCH SỬ TRA TỪ
+// ============================================================
+const lichSu = [];
+
+function themLichSu(tu) {
+  if (!lichSu.includes(tu)) {
+    lichSu.unshift(tu);
+    if (lichSu.length > 10) lichSu.pop();
+  }
+  hienThiLichSu();
+}
+
+function hienThiLichSu() {
+  const el = document.getElementById('lichSu');
+  if (lichSu.length === 0) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.innerHTML = '<div class="ls-title">Đã tra</div>' +
+    lichSu.map(t => `<span class="ls-chip" onclick="traTuQuick('${t}')">${t}</span>`).join('');
+}
+
+function traTuQuick(tu) {
+  document.getElementById('inputTu').value = tu;
+  traTu();
+}
+
+// ============================================================
+// GỌI DICTIONARY API
+// ============================================================
+async function layThongTinTu(tu) {
+  let ipa = '', nghia = '', loaiTu = '';
+
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(tu)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data[0]) {
+        const entry = data[0];
+        // Lấy IPA — ưu tiên phonetic chính, nếu không có thì lấy từ phonetics array
+        ipa = entry.phonetic || '';
+        if (!ipa && Array.isArray(entry.phonetics)) {
+          ipa = (entry.phonetics.find(p => p.text) || {}).text || '';
+        }
+        loaiTu = entry.meanings?.[0]?.partOfSpeech || '';
+      }
+    }
+  } catch (e) { /* bỏ qua nếu API lỗi */ }
+
+  try {
+    const res = await fetch(
+      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(tu)}`
+    );
+    if (res.ok) {
+      const data = await res.json();
+      nghia = data?.[0]?.[0]?.[0] || '';
+    }
+  } catch (e) { /* bỏ qua nếu API lỗi */ }
+
+  return { ipa, nghia, loaiTu };
+}
+
+// ============================================================
+// HÀM CHÍNH
+// ============================================================
+async function traTu() {
+  const tu = document.getElementById('inputTu').value.trim();
+  if (!tu) return;
+
+  const vung = document.getElementById('vungHienThi');
+  vung.innerHTML = `<div class="loading">Đang tra từ<span class="dots"></span></div>`;
+
+  try {
+    const { ipa, nghia, loaiTu } = await layThongTinTu(tu);
+
+    const boiRaw = ipaToVietBoi(ipa);
+    const boi = boiRaw ? boiRaw.toUpperCase() : tu.toUpperCase();
+
+    // Nếu không lấy được IPA, hiển thị thông báo nhỏ
+    const ghiChu = !ipa ? '⚠️ Không tìm thấy IPA, phiên âm ước lượng' : '';
+
+    vung.innerHTML = `
+      <div class="ket-qua">
+        <div class="top-row">
+          <div>
+            <div class="tu-tieng-anh">${tu.toLowerCase()}</div>
+            ${ipa ? `<div class="ipa-row">${ipa}</div>` : ''}
+          </div>
+          <button class="loa-btn" onclick="phatAm(this)">🔊</button>
+        </div>
+
+        <div class="phien-am-bo">
+          <div class="bo-label">Đọc theo tiếng Việt</div>
+          <div class="bo-text">${boi}</div>
+          ${ghiChu ? `<div style="font-size:12px;color:#475569;margin-top:8px;">${ghiChu}</div>` : ''}
+        </div>
+
+        <div class="nghia-box">
+          <div class="nghia-label">Nghĩa tiếng Việt</div>
+          <div class="nghia-text">${nghia || '(Không tìm thấy nghĩa)'}</div>
+          ${loaiTu ? `<div class="nghia-loai">${loaiTu}</div>` : ''}
+        </div>
+      </div>`;
+
+    // Lưu từ gốc vào closure cho nút loa
+    const btn = vung.querySelector('.loa-btn');
+    btn._word = tu;
+    btn.onclick = () => phatAm(btn._word);
+
+    themLichSu(tu.toLowerCase());
+    phatAm(tu);
+
+  } catch (e) {
+    vung.innerHTML = `<div class="loi">😅 Từ này tra không được, anh thử lại nhé!</div>`;
+  }
+}
+
+// ============================================================
+// PHÁT ÂM — an toàn, không crash nếu không có speechSynthesis
+// ============================================================
+function phatAm(wordOrBtn) {
+  const word = typeof wordOrBtn === 'string' ? wordOrBtn
+    : wordOrBtn._word || wordOrBtn.closest?.('[data-word]')?.dataset.word || '';
+  try {
+    if (!word || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    const msg = new SpeechSynthesisUtterance(text);
+    const msg = new SpeechSynthesisUtterance(word);
     msg.lang = 'en-US';
+    msg.rate = 0.85;
     window.speechSynthesis.speak(msg);
+  } catch (e) { /* không có loa thì thôi */ }
 }
 
-document.getElementById('inputTu').addEventListener('keypress', (e) => { if (e.key === 'Enter') traTu(); });
+// Enter để tìm
+document.getElementById('inputTu').addEventListener('keypress', e => {
+  if (e.key === 'Enter') traTu();
+});
 </script>
 </body>
 </html>
