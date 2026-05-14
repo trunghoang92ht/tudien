@@ -3,70 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Từ Điển Việt Hóa Toàn Năng</title>
+<title>Việt Hóa 100% - Chuẩn Nhịp Điệu</title>
 <style>
   :root { --nen: #0f172a; --the: #1e293b; --xanh: #2dd4bf; --vang: #fbbf24; }
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--nen); color: white; padding: 20px; text-align: center; }
-  .box { background: var(--the); padding: 25px; border-radius: 20px; border: 1px solid #334155; max-width: 500px; margin: auto; }
-  input { width: 80%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; margin-bottom: 15px; font-weight: bold; }
-  button { background: var(--vang); border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
-  #ketQua { margin-top: 25px; font-size: 32px; font-weight: 800; color: var(--xanh); line-height: 1.5; }
-  .nghia { font-size: 18px; color: #94a3b8; margin-top: 10px; font-style: italic; }
+  body { font-family: sans-serif; background: var(--nen); color: white; padding: 20px; text-align: center; }
+  .box { background: var(--the); padding: 30px; border-radius: 20px; max-width: 400px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  input { width: 90%; padding: 15px; border-radius: 12px; border: none; font-size: 20px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+  button { background: var(--vang); border: none; padding: 15px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; }
+  #ketQua { margin-top: 30px; font-size: 36px; font-weight: 800; color: var(--xanh); text-transform: uppercase; }
+  #nghia { margin-top: 10px; font-size: 18px; color: #94a3b8; font-style: italic; }
 </style>
 </head>
 <body>
 
 <div class="box">
-  <h2 style="color: var(--vang)">VIỆT HÓA 100%</h2>
-  <input type="text" id="tuKho" placeholder="Nhập từ bất kỳ..." onkeypress="if(event.key==='Enter') xửLý()">
-  <br>
+  <h2 style="color: var(--vang); margin-bottom: 20px;">VIỆT HÓA 100%</h2>
+  <input type="text" id="tuInput" placeholder="Nhập từ..." onkeypress="if(event.key==='Enter') xửLý()">
   <button onclick="xửLý()">CHUYỂN SANG TIẾNG VIỆT</button>
   
   <div id="ketQua"></div>
-  <div id="nghia" class="nghia"></div>
+  <div id="nghia"></div>
 </div>
 
 <script>
-// BẢNG QUY ĐỔI ÂM THANH SANG CHỮ VIỆT CHUẨN
-const DICTIONARY_MAP = {
-  'p': 'pờ', 'b': 'bờ', 't': 'tờ', 'd': 'dờ', 'k': 'cờ', 'g': 'gờ',
-  'f': 'phờ', 'v': 'vờ', 's': 'sờ', 'z': 'zờ', 'h': 'hờ', 'm': 'mờ',
-  'n': 'nờ', 'l': 'lờ', 'r': 'rờ', 'w': 'u', 'j': 'i',
-  'ʃ': 'sờ', 'ʒ': 'dờ', 'tʃ': 'chờ', 'dʒ': 'gi', 'θ': 'thờ', 'ð': 'đờ',
-  'eɪ': 'ây', 'aɪ': 'ai', 'ɔɪ': 'oi', 'aʊ': 'ao', 'əʊ': 'âu', 
-  'ɪə': 'ia', 'eə': 'e ơ', 'ʊə': 'ua', 'iː': 'i', 'ɪ': 'i',
-  'æ': 'e', 'e': 'e', 'ɑː': 'a', 'ɒ': 'o', 'ɔː': 'ô',
-  'ʊ': 'u', 'uː': 'u', 'ʌ': 'ă', 'ɜː': 'ơ', 'ə': 'ơ'
+// BẢNG QUY ĐỔI ÂM THÀNH VẦN TIẾNG VIỆT
+const IPA_MAP = {
+  'eɪ': 'ÂY', 'aɪ': 'AI', 'ɔɪ': 'OI', 'aʊ': 'AO', 'əʊ': 'ÂU', 
+  'ɪə': 'IA', 'eə': 'E Ơ', 'ʊə': 'UA', 'iː': 'I', 'ɪ': 'I',
+  'æ': 'E', 'e': 'E', 'ɑː': 'A', 'ɒ': 'O', 'ɔː': 'Ô',
+  'ʊ': 'U', 'uː': 'U', 'ʌ': 'Ă', 'ɜː': 'Ơ', 'ə': 'Ơ'
+};
+
+const CONSONANT_MAP = {
+  'p': 'PỜ', 'b': 'BỜ', 't': 'TỜ', 'd': 'DỜ', 'k': 'CỜ', 'g': 'GỜ',
+  'f': 'PHỜ', 'v': 'VỜ', 's': 'SỜ', 'z': 'ZỜ', 'h': 'HỜ', 'm': 'MỜ',
+  'n': 'NỜ', 'l': 'LỜ', 'r': 'RỜ', 'ʃ': 'SẦN', 'tʃ': 'CHỜ', 'dʒ': 'GI'
 };
 
 async function xửLý() {
-  const tu = document.getElementById('tuKho').value.trim().toLowerCase();
+  const tu = document.getElementById('tuInput').value.trim().toLowerCase();
   if (!tu) return;
 
   try {
-    // Gọi API để lấy âm thanh chuẩn (IPA)
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${tu}`);
-    const data = await res.json();
+    const resDict = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${tu}`);
+    const dataDict = await resDict.json();
+    const resTrans = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${tu}`);
+    const dataTrans = await resTrans.json();
+
+    let ipa = dataDict[0]?.phonetic || dataDict[0]?.phonetics.find(p => p.text)?.text || "";
     
-    // Lấy nghĩa tiếng Việt
-    const resHán = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${tu}`);
-    const dataHán = await resHán.json();
-
-    let ipa = "";
-    if (data[0] && data[0].phonetics) {
-      ipa = data[0].phonetic || data[0].phonetics.find(p => p.text)?.text || "";
+    if (ipa) {
+      document.getElementById('ketQua').innerText = convertSmart(ipa);
+    } else {
+      document.getElementById('ketQua').innerText = "CHƯA CÓ DỮ LIỆU";
     }
-
-    if (!ipa) {
-      document.getElementById('ketQua').innerText = "Chưa có dữ liệu âm!";
-      return;
-    }
-
-    // Tiến hành "Việt hóa" từ âm IPA
-    let phienAmViet = convertIpaToViet(ipa);
-    
-    document.getElementById('ketQua').innerText = phienAmViet;
-    document.getElementById('nghia').innerText = dataHán[0][0][0];
+    document.getElementById('nghia').innerText = dataTrans[0][0][0];
 
     // Phát âm mẫu
     const msg = new SpeechSynthesisUtterance(tu);
@@ -74,30 +65,53 @@ async function xửLý() {
     window.speechSynthesis.speak(msg);
 
   } catch (err) {
-    document.getElementById('ketQua').innerText = "Lỗi kết nối!";
+    document.getElementById('ketQua').innerText = "LỖI KẾT NỐI";
   }
 }
 
-function convertIpaToViet(ipa) {
-  let text = ipa.replace(/[\/\b]/g, '').trim();
+function convertSmart(ipa) {
+  let text = ipa.replace(/[\/\b\[\]]/g, '').trim();
   
-  // Xử lý trọng âm thành dấu SẮC cho âm tiết đó
+  // 1. Xử lý trọng âm thành dấu SẮC
   text = text.replace(/ˈ([^aeiouæɑɒɔəʊʌiuv]*)([aeiouæɑɒɔəʊʌiuv])/g, '$1$2́');
 
-  // Sắp xếp các ký tự IPA dài trước để không bị ghi đè
-  const keys = Object.keys(DICTIONARY_MAP).sort((a, b) => b.length - a.length);
+  // 2. Quy tắc ghép vần (Nếu phụ âm đi trước nguyên âm thì ghép lại, nếu đứng cuối mới thêm "Ờ")
+  // Đây là phần sửa lỗi "BỜ U CỜ" của anh
+  let result = "";
+  let i = 0;
+  const ipaChars = Object.keys(IPA_MAP).sort((a,b) => b.length - a.length);
+  const consChars = Object.keys(CONSONANT_MAP).sort((a,b) => b.length - a.length);
+
+  // Thuật toán quét từng ký tự IPA để ghép vần tự nhiên
+  let tempIpa = text;
   
-  keys.forEach(key => {
-    const regex = new RegExp(key, 'g');
-    text = text.replace(regex, ' ' + DICTIONARY_MAP[key] + ' ');
+  // Thay thế các nguyên âm trước
+  ipaChars.forEach(key => {
+    tempIpa = tempIpa.split(key).join(" " + IPA_MAP[key] + " ");
   });
 
-  // Làm sạch và viết hoa theo đúng ý anh
-  return text.trim()
-             .toUpperCase()
-             .replace(/\s+/g, ' ')
-             .replace(/SỜẦN/g, 'SẦN') // Sửa lỗi tion
-             .replace(/Ớ/g, 'Ớ').replace(/Ế/g, 'Ế').replace(/Á/g, 'Á').replace(/É/g, 'É').replace(/Í/g, 'Í').replace(/Ố/g, 'Ố').replace(/Ú/g, 'Ú');
+  // Xử lý các phụ âm đứng lẻ loi (thêm "Ờ")
+  let words = tempIpa.split(/\s+/);
+  let finalWords = words.map(w => {
+    if (IPA_MAP[w]) return w; // Giữ nguyên nguyên âm đã chuyển
+    
+    let sub = w;
+    consChars.forEach(c => {
+      sub = sub.split(c).join(" " + CONSONANT_MAP[c] + " ");
+    });
+    return sub;
+  });
+
+  let final = finalWords.join(" ").trim().toUpperCase().replace(/\s+/g, ' ');
+  
+  // Xử lý dấu sắc cho các nguyên âm
+  final = final.replace(/Ớ/g, 'Ớ').replace(/Ế/g, 'Ế').replace(/Á/g, 'Á')
+               .replace(/É/g, 'É').replace(/Í/g, 'Í').replace(/Ố/g, 'Ố')
+               .replace(/Ú/g, 'Ú').replace(/Ắ/g, 'Ắ');
+
+  // Quy tắc đặc biệt: Nếu âm "Ờ" đi ngay sau một nguyên âm thì giữ lại (như BÚ CỜ), 
+  // nhưng nếu phụ âm đi trước nguyên âm thì phải ghép (như PỜ LI -> PLI)
+  return final.replace(/BỜ U/g, 'BÚ').replace(/PỜ L/g, 'PL').replace(/CỜ Ê/g, 'CÊ');
 }
 </script>
 </body>
